@@ -3,34 +3,45 @@ package me.jahaziel.weapons;
 import me.jahaziel.weapons.commands.BountyCommand;
 import me.jahaziel.weapons.commands.ResetCommand;
 import me.jahaziel.weapons.commands.RitualCommand;
+import me.jahaziel.weapons.events.RitualListener;
 import me.jahaziel.weapons.events.WeaponsListener;
+import me.jahaziel.weapons.items.CustomItems;
+import me.jahaziel.weapons.items.WeaponStorage;
 import me.jahaziel.weapons.managers.RitualManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class WeaponsPlugin extends JavaPlugin {
-
     private static WeaponsPlugin instance;
 
     @Override
     public void onEnable() {
         instance = this;
-        getLogger().info("WeaponsPlugin enabled!");
+        saveDefaultConfig();
 
+        // load storage & items
+        WeaponStorage.init(this);
+        WeaponStorage.load();
+        CustomItems.init(this);
+
+        RitualManager.init(this);
+
+        // Commands
         getCommand("bounty").setExecutor(new BountyCommand());
         getCommand("ritual").setExecutor(new RitualCommand());
-        getCommand("weapans").setExecutor(new ResetCommand());
+        getCommand("weapan").setExecutor(new ResetCommand());
 
-        getServer().getPluginManager().registerEvents(new WeaponsListener(), this);
+        // Events
+        getServer().getPluginManager().registerEvents(new WeaponsListener(this), this);
+        getServer().getPluginManager().registerEvents(new RitualListener(), this);
 
-        RitualManager.init();
+        getLogger().info("WeaponsPlugin enabled (visuals + effects active)");
     }
 
     @Override
     public void onDisable() {
-        getLogger().info("WeaponsPlugin disabled!");
+        WeaponStorage.save();
+        getLogger().info("WeaponsPlugin disabled");
     }
 
-    public static WeaponsPlugin getInstance() {
-        return instance;
-    }
+    public static WeaponsPlugin getInstance() { return instance; }
 }

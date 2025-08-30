@@ -2,10 +2,10 @@ package me.jahaziel.weapons.managers;
 
 import me.jahaziel.weapons.WeaponsPlugin;
 import me.jahaziel.weapons.items.CustomItems;
+import me.jahaziel.weapons.items.WeaponStorage;
 import org.bukkit.*;
-import org.bukkit.boss.BarColor;
-import org.bukkit.boss.BarStyle;
-import org.bukkit.boss.BossBar;
+import org.bukkit.boss.*;
+import org.bukkit.entity.Firework;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -14,82 +14,81 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.*;
 
 public class RitualManager {
+    private static WeaponsPlugin plugin;
+    private static final Map<UUID, RitualData> active = new HashMap<>();
+    private static final int RITUAL_SECONDS = 15 * 60; // 15 minutes
 
-    private static final Map<UUID, RitualData> rituals = new HashMap<>();
-    private static final Map<UUID, Set<String>> craftedItems = new HashMap<>();
-    private static final int RITUAL_SECONDS = 60;
+    public static void init(WeaponsPlugin pl) { plugin = pl; }
 
-    public static void init() {
-        rituals.clear();
-        craftedItems.clear();
-    }
-
-    public static boolean hasCrafted(Player player, String itemId) {
-        return craftedItems.getOrDefault(player.getUniqueId(), Collections.emptySet()).contains(itemId);
-    }
-
-    public static void startRitual(Player player, Location center, String itemId) {
+    public static boolean startRitual(Player player, String itemId) {
+        if (!player.isOp()) return false;
         UUID uuid = player.getUniqueId();
-        if (rituals.containsKey(uuid)) {
-            player.sendMessage(ChatColor.RED + "You already have a ritual in progress!");
-            return;
-        }
+        if (active.containsKey(uuid)) { player.sendMessage("§cYou already have a ritual running."); return false; }
 
+        Location center = player.getLocation().getBlock().getLocation().add(0.5, 0, 0.5);
         World world = center.getWorld();
-        List<BlockSnapshot> original = new ArrayList<>();
 
-        for (int x = -1; x <= 1; x++) {
-            for (int z = -1; z <= 1; z++) {
-                Location loc = center.clone().add(x, 0, z);
-                original.add(new BlockSnapshot(loc, loc.getBlock().getType(), loc.getBlock().getBlockData()));
-                loc.getBlock().setType(Material.OBSIDIAN, false);
+        List<BlockSnapshot> original = new ArrayList<>();
+        int cx = center.getBlockX(), cy = center.getBlockY(), cz = center.getBlockZ();
+        for (int dx=-1; dx<=1; dx++) {
+            for (int dz=-1; dz<=1; dz++) {
+                org.bukkit.block.Block b = world.getBlockAt(cx + dx, cy, cz + dz);
+                original.add(new BlockSnapshot(b.getLocation(), b.getType(), b.getBlockData()));
+                if (dx==0 && dz==0) b.setType(Material.BEACON);
+                else b.setType(Material.SPRUCE_PLANKS);
             }
         }
 
-        BossBar bossBar = Bukkit.createBossBar("Ritual: " + itemId, BarColor.PURPLE, BarStyle.SOLID);
-        bossBar.addPlayer(player);
+        BossBar bar = Bukkit.createBossBar("Ritual: " + itemId + " (15:00)", BarColor.PURPLE, BarStyle.SEGMENTED_20);
+        bar.addPlayer(player);
+
+        player.sendMessage("§aRitual started for §f" + itemId + " §aat coordinates: §6" + center.getBlockX() + " " + center.getBlockY() + " " + center.getBlockZ());
 
         final int[] remaining = {RITUAL_SECONDS};
-
         BukkitRunnable task = new BukkitRunnable() {
             @Override
             public void run() {
                 remaining[0]--;
-                bossBar.setTitle("Ritual: " + itemId + " (" + remaining[0] + "s)");
-                bossBar.setProgress(Math.max(0.0, remaining[0] / (double) RITUAL_SECONDS));
-
+                bar.setTitle("Ritual: " + itemId + " (" + (remaining[0]/60) + ":" + String.format("%02d", remaining[0]%60) + ")");
+                bar.setProgress(Math.max(0.0, remaining[0] / (double) RITUAL_SECONDS));
                 if (remaining[0] <= 0) {
-                    cancel();
-                    bossBar.removePlayer(player);
-
-                    // Restore blocks
-                    for (BlockSnapshot snap : original) {
-                        snap.loc.getBlock().setType(snap.material, false);
-                        try { snap.loc.getBlock().setBlockData(snap.blockData); } catch (Exception ignored) {}
+                    // restore blocks
+                    for (BlockSnapshot s : original) {
+                        org.bukkit.block.Block b = world.getBlockAt(s.loc);
+                        b.setType(s.material, false);
+                        try { b.setBlockData(s.blockData); } catch (Exception ignored) {}
                     }
-
-                    // Spawn item
-                    ItemStack itemStack = CustomItems.getItem(itemId);
-                    if (itemStack != null) {
-                        Item dropped = world.dropItem(center.clone().add(0,5,0), itemStack);
+                    ItemStack created = CustomItems.getItem(itemId);
+                    if (created != null) {
+                        Item dropped = world.dropItem(center.clone().add(0,5,0), created);
                         dropped.setPickupDelay(20);
-                        player.sendMessage(ChatColor.GREEN + "Ritual complete! Crafted " + itemId);
-                        craftedItems.computeIfAbsent(uuid, k -> new HashSet<>()).add(itemId);
-                    }
+                        WeaponStorage.markCrafted(itemId);
 
-                    rituals.remove(uuid);
+                        // spectacle
+                        world.spawn(center, Firework.class);
+                        world.playSound(center, Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
+                    }
+                    bar.removePlayer(player);
+                    bar.setVisible(false);
+                    player.sendTitle("§aRitual Complete", "§6" + itemId, 10, 60, 10);
+                    active.remove(uuid);
+                    cancel();
                 }
             }
         };
 
-        task.runTaskTimer(WeaponsPlugin.getInstance(), 20L, 20L);
-        rituals.put(uuid, new RitualData(bossBar, task));
+        task.runTaskTimer(plugin, 20L, 20L);
+        active.put(uuid, new RitualData(center, original, bar, task));
+        return true;
     }
 
-    public static void resetCrafted(Player player) {
-        craftedItems.remove(player.getUniqueId());
+    public static void cancelRitual(UUID uuid) {
+        RitualData d = active.remove(uuid);
+        if (d == null) return;
+        d.task.cancel();
+        d.bossBar.removeAll();
     }
 
-    private record RitualData(BossBar bossBar, BukkitRunnable task) {}
+    private record RitualData(Location center, List<BlockSnapshot> original, BossBar bossBar, BukkitRunnable task) {}
     private record BlockSnapshot(Location loc, Material material, org.bukkit.block.data.BlockData blockData) {}
 }

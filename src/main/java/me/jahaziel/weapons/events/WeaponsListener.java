@@ -1,85 +1,177 @@
 package me.jahaziel.weapons.events;
 
+import me.jahaziel.weapons.WeaponsPlugin;
 import me.jahaziel.weapons.items.CustomItems;
-import org.bukkit.*;
+import me.jahaziel.weapons.managers.CooldownManager;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.scheduler.BukkitRunnable;
-import me.jahaziel.weapons.WeaponsPlugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
+
+import java.util.UUID;
 
 public class WeaponsListener implements Listener {
+    private final WeaponsPlugin plugin;
+
+    public WeaponsListener(WeaponsPlugin plugin) { this.plugin = plugin; }
 
     @EventHandler
-    public void onWeaponHit(EntityDamageByEntityEvent e) {
+    public void onEntityDamage(EntityDamageByEntityEvent e) {
         if (!(e.getDamager() instanceof Player player)) return;
-        ItemStack item = player.getInventory().getItemInMainHand();
-        if (!isCustomWeapon(item)) return;
+        ItemStack weapon = player.getInventory().getItemInMainHand();
+        if (weapon == null) return;
 
-        String name = item.getItemMeta().getDisplayName();
+        String id = CustomItems.getId(weapon);
+        if (id == null) return;
 
-        if (name.contains("Scythe of Darkness")) {
-            if (e.getEntity() instanceof LivingEntity le) {
-                Location playerLoc = player.getLocation();
-                Location targetLoc = le.getLocation();
-                double dx = playerLoc.getX() - targetLoc.getX();
-                double dy = playerLoc.getY() - targetLoc.getY();
-                double dz = playerLoc.getZ() - targetLoc.getZ();
-                le.setVelocity(new org.bukkit.util.Vector(dx, dy, dz).normalize().multiply(1.5));
+        // SCYTHE OF LIGHT — mace-like hits but sword cooldown
+        if (id.equals("scythe_of_light")) {
+            e.setDamage(e.getDamage() + 3.0);
+            if (e.getEntity() instanceof LivingEntity tgt) {
+                Location p = tgt.getLocation().add(0, 1, 0);
+                // replaced removed ITEM_CRACK with END_ROD for sparkle
+                tgt.getWorld().spawnParticle(Particle.END_ROD, p, 12, 0.4, 0.4, 0.4, 0.0);
+                tgt.getWorld().playSound(p, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 0.8f, 1f);
             }
         }
 
-        if (name.contains("Lifestealer")) {
-            if (e.getEntity() instanceof LivingEntity le) {
-                double heal = e.getFinalDamage() * 0.5;
-                player.setHealth(Math.min(player.getMaxHealth(), player.getHealth() + heal));
+        // SCYTHE OF DARKNESS — reaping (pull) on hit
+        if (id.equals("scythe_of_darkness")) {
+            if (e.getEntity() instanceof LivingEntity tgt) {
+                Vector pull = player.getLocation().toVector().subtract(tgt.getLocation().toVector()).normalize().multiply(1.6);
+                tgt.setVelocity(pull);
+                // shadow particle using CAMPFIRE_COSY_SMOKE (stable)
+                tgt.getWorld().spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, tgt.getLocation().add(0, 1, 0), 8, 0.3, 0.3, 0.3, 0.02);
+            }
+        }
+
+        // LIFESTEALER — heal 50% of damage dealt
+        if (id.equals("lifestealer")) {
+            double heal = e.getFinalDamage() * 0.5;
+            double max = player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+            player.setHealth(Math.min(player.getHealth() + heal, max));
+            // use END_ROD + HEART instead of ITEM_CRACK
+            player.getWorld().spawnParticle(Particle.HEART, player.getLocation().add(0, 1, 0), 6, 0.3, 0.3, 0.3, 0.0);
+            player.getWorld().spawnParticle(Particle.END_ROD, player.getLocation().add(0, 1, 0), 8, 0.2, 0.2, 0.2, 0.0);
+        }
+
+        // WITHER LAUNCHER — backup on-hit effect
+        if (id.equals("wither_launcher")) {
+            if (!CooldownManager.isOnCooldown("wither_launcher", player.getUniqueId())) {
+                if (e.getEntity() instanceof LivingEntity tgt) {
+                    tgt.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 20 * 20, 0));
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 20 * 10, 0));
+                    CooldownManager.setCooldown("wither_launcher", player.getUniqueId(), 30L);
+                }
             }
         }
     }
 
     @EventHandler
-    public void onWeaponUse(PlayerInteractEvent e) {
+    public void onPlayerInteract(PlayerInteractEvent e) {
+        if (e.getHand() != EquipmentSlot.HAND) return;
         Player player = e.getPlayer();
-        ItemStack item = e.getItem();
-        if (!isCustomWeapon(item)) return;
-        String name = item.getItemMeta().getDisplayName();
+        ItemStack item = player.getInventory().getItemInMainHand();
+        if (item == null) return;
+        String id = CustomItems.getId(item);
+        if (id == null) return;
 
-        if (name.contains("Wither Launcher") && e.getAction() == Action.RIGHT_CLICK_AIR) {
-            Location loc = player.getEyeLocation().add(player.getLocation().getDirection());
-            Wither skull = player.getWorld().spawn(loc, Wither.class);
-            skull.setAI(false);
-            skull.setSilent(true);
-            skull.setInvulnerable(true);
-            skull.setCustomName("WitherProjectile");
-        }
+        UUID uuid = player.getUniqueId();
 
-        if (name.contains("Scythe of Darkness") && e.getAction() == Action.RIGHT_CLICK_AIR) {
-            // Particle wave
-            new BukkitRunnable() {
-                int count = 0;
-                @Override
-                public void run() {
-                    if (count++ > 10) cancel();
-                    player.getWorld().spawnParticle(Particle.SWEEP_ATTACK, player.getLocation().add(player.getLocation().getDirection()), 10, 1, 1, 1, 0.1);
-                    for (Entity entity : player.getNearbyEntities(5,5,5)) {
-                        if (entity instanceof LivingEntity le && le != player) {
-                            le.damage(4);
-                            le.setVelocity(player.getLocation().getDirection().multiply(1.2));
-                        }
+        // SCYTHE OF DARKNESS — right-click wave that transfers potion effects & costs 25% health
+        if (id.equals("scythe_of_darkness")) {
+            if (CooldownManager.isOnCooldown("scythe_dark_wave", uuid)) {
+                player.sendMessage("§cScythe wave on cooldown (" + CooldownManager.getRemaining("scythe_dark_wave", uuid) + "s)");
+                return;
+            }
+            Location eye = player.getEyeLocation();
+            Vector dir = eye.getDirection().normalize();
+
+            // visual: feather trail replaced with END_ROD + CAMPFIRE_COSY_SMOKE
+            for (int i = 1; i <= 6; i++) {
+                Location p = eye.clone().add(dir.clone().multiply(i));
+                p.getWorld().spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, p, 10, 0.4, 0.4, 0.4, 0.02);
+                p.getWorld().spawnParticle(Particle.END_ROD, p, 6, 0.2, 0.2, 0.2, 0.0);
+            }
+
+            // affect targets
+            for (Entity ent : player.getNearbyEntities(5, 2, 5)) {
+                if (ent instanceof LivingEntity tgt && !tgt.equals(player)) {
+                    tgt.damage(6, player);
+                    // transfer potion effects
+                    for (PotionEffect eff : player.getActivePotionEffects()) {
+                        tgt.addPotionEffect(new PotionEffect(eff.getType(), eff.getDuration(), eff.getAmplifier()));
                     }
                 }
-            }.runTaskTimer(WeaponsPlugin.getInstance(), 0L, 2L);
-        }
-    }
+            }
 
-    private boolean isCustomWeapon(ItemStack item) {
-        if (item == null || !item.hasItemMeta()) return false;
-        String name = item.getItemMeta().getDisplayName();
-        return name.contains("Scythe") || name.contains("Lifestealer") || name.contains("Wither Launcher") || name.contains("King's Crown");
+            // cost player 25% health
+            double cost = Math.max(1.0, player.getHealth() * 0.25);
+            player.damage(cost);
+            CooldownManager.setCooldown("scythe_dark_wave", uuid, 10L);
+
+            // cosmetic: sound and title
+            player.playSound(player.getLocation(), Sound.ENTITY_ELDER_GUARDIAN_CURSE, 1f, 1f);
+            player.sendTitle("§5Dark Wave", "§7You feel the shadows consume you", 5, 40, 5);
+            return;
+        }
+
+        // LIFESTEALER right-click: temporary absorption hearts
+        if (id.equals("lifestealer")) {
+            if (CooldownManager.isOnCooldown("lifestealer_m2", uuid)) {
+                player.sendMessage("§cLifestealer on cooldown");
+                return;
+            }
+            player.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 20 * 30, 1)); // stronger absorption
+            player.getWorld().spawnParticle(Particle.END_ROD, player.getLocation().add(0, 1, 0), 20, 0.3, 0.3, 0.3, 0.0);
+            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1.2f);
+            CooldownManager.setCooldown("lifestealer_m2", uuid, 60L);
+            return;
+        }
+
+        // WITHER LAUNCHER right-click: spawn wither skull (non-destructive)
+        if (id.equals("wither_launcher")) {
+            if (CooldownManager.isOnCooldown("wither_launcher", uuid)) {
+                player.sendMessage("§cWither Launcher on cooldown");
+                return;
+            }
+            Location spawn = player.getEyeLocation().add(player.getLocation().getDirection());
+            WitherSkull skull = player.getWorld().spawn(spawn, WitherSkull.class);
+            skull.setShooter(player);
+            skull.setVelocity(player.getLocation().getDirection().multiply(1.6));
+            skull.setIsIncendiary(false);
+
+            // visual trail around launch (END_ROD)
+            player.getWorld().spawnParticle(Particle.END_ROD, spawn, 12, 0.5, 0.5, 0.5, 0.0);
+            player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SHOOT, 1f, 0.9f);
+
+            // when skull 'hits' apply wither effects and remove skull (delayed simulate)
+            Bukkit.getScheduler().runTaskLater(WeaponsPlugin.getInstance(), () -> {
+                for (Entity ent : skull.getNearbyEntities(3, 3, 3)) {
+                    if (ent instanceof LivingEntity t) t.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 20 * 20, 1));
+                }
+                player.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 20 * 10, 1));
+                skull.remove();
+            }, 12L);
+
+            CooldownManager.setCooldown("wither_launcher", uuid, 30L);
+            return;
+        }
+
+        // KING'S CROWN cosmetic sparkle when right-clicking while wearing
+        if (id.equals("kings_crown")) {
+            player.getWorld().spawnParticle(Particle.END_ROD, player.getLocation().add(0, 1.2, 0), 6, 0.2, 0.4, 0.2, 0.0);
+        }
     }
 }

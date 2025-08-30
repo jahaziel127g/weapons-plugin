@@ -4,32 +4,29 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public final class CooldownManager {
+public class CooldownManager {
+    private static final Map<String, Map<UUID, Long>> cd = new HashMap<>();
 
-    private static final Map<String, Map<UUID, Long>> cooldowns = new HashMap<>();
-
-    public static void init() {
-        cooldowns.clear();
+    public static boolean isOnCooldown(String ability, UUID player) {
+        Map<UUID, Long> m = cd.get(ability);
+        if (m == null) return false;
+        Long until = m.get(player);
+        if (until == null) return false;
+        if (System.currentTimeMillis() >= until) { m.remove(player); return false; }
+        return true;
     }
 
-    public static boolean isOnCooldown(String key, UUID player) {
-        Map<UUID, Long> map = cooldowns.get(key);
-        if (map == null) return false;
-        Long until = map.get(player);
-        return until != null && until > System.currentTimeMillis();
+    public static void setCooldown(String ability, UUID player, long seconds) {
+        cd.putIfAbsent(ability, new HashMap<>());
+        cd.get(ability).put(player, System.currentTimeMillis() + seconds * 1000L);
     }
 
-    public static long getRemaining(String key, UUID player) {
-        Map<UUID, Long> map = cooldowns.get(key);
-        if (map == null) return 0;
-        Long until = map.get(player);
+    public static int getRemaining(String ability, UUID player) {
+        Map<UUID, Long> m = cd.get(ability);
+        if (m == null) return 0;
+        Long until = m.get(player);
         if (until == null) return 0;
-        return Math.max(0, until - System.currentTimeMillis());
-    }
-
-    public static void setCooldown(String key, UUID player, long millis) {
-        Map<UUID, Long> map = cooldowns.computeIfAbsent(key, k -> new HashMap<>());
-        map.put(player, System.currentTimeMillis() + millis);
+        long left = until - System.currentTimeMillis();
+        return left > 0 ? (int) (left / 1000) : 0;
     }
 }
-
