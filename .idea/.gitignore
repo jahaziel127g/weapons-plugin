@@ -1,3 +1,31 @@
-# Default ignored files
-/shelf/
-/workspace.xml
+# Maven / Java
+target/
+*.log
+*.class
+
+# IntelliJ / IDE
+/.idea/
+/*.iml
+out/
+*.iml
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+*.jar
+*.war
+
+# Local plugin data
+/data/
+crafted.yml
+plugins/*.jar
+
+# Node / others (if present)
+node_modules/
