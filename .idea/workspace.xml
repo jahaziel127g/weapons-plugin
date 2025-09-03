@@ -5,8 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c0cec981-36ad-46c9-b7a5-83edf7a4cfe2" name="Changes" comment="- Implement WeaponsPlugin main class and plugin.yml&#10;- Add CustomItems with persistent data tags so items keep identity in chests&#10;- Implement WeaponStorage (crafted.yml) for persistence and reset support&#10;- Add RitualManager with 15-minute ritual, bossbar and item drop&#10;- Add CooldownManager and polished WeaponsListener (all weapon abilities)&#10;- Add RitualListener and commands: /ritual, /weapan, /bounty&#10;- Visual/audio polish: particles, sounds, titles, fireworks&#10;- Add POM for building with Maven (Paper 1.21, Java 21)">
-      <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/weaponsplugin.iml" beforeDir="false" afterPath="$PROJECT_DIR$/weaponsplugin.iml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,7 +40,7 @@
   <component name="GithubPullRequestsUISettings"><![CDATA[{
   "selectedUrlAndAccountId": {
     "url": "https://github.com/jahaziel127g/weapons-plugin.git",
-    "accountId": "e839a533-9bcb-4576-ae3b-14c318b6d6d0"
+    "accountId": "30ca8b2a-4f6c-49c5-a224-cea7bc940715"
   }
 }]]></component>
   <component name="ProblemsViewState">
@@ -56,7 +57,7 @@
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;Maven.weaponsplugin [clean,package].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.weaponsplugin [clean,package].executor&quot;: &quot;Debug&quot;,
     &quot;Maven.weaponsplugin [jar:jar].executor&quot;: &quot;Run&quot;,
     &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
