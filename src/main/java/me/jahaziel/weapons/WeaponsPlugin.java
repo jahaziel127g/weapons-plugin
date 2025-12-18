@@ -22,13 +22,15 @@ public final class WeaponsPlugin extends JavaPlugin {
         WeaponStorage.init(this);
         WeaponStorage.load();
         CustomItems.init(this);
+        CustomItems.registerRecipes(this);
 
         RitualManager.init(this);
+        RitualManager.load();
 
         // Commands
         getCommand("bounty").setExecutor(new BountyCommand());
         getCommand("ritual").setExecutor(new RitualCommand());
-        getCommand("weapan").setExecutor(new ResetCommand());
+        getCommand("weapon").setExecutor(new ResetCommand());
 
         // Events
         getServer().getPluginManager().registerEvents(new WeaponsListener(this), this);
@@ -40,8 +42,11 @@ public final class WeaponsPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         WeaponStorage.save();
+        RitualManager.save();
         getLogger().info("WeaponsPlugin disabled");
     }
 
-    public static WeaponsPlugin getInstance() { return instance; }
+    public static WeaponsPlugin getInstance() {
+        return instance;
+    }
 }

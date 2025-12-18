@@ -29,7 +29,22 @@ public class CustomItems {
         register("kings_crown", createKingsCrown());
     }
 
-    private static void register(String id, ItemStack item) { registry.put(id, item); }
+    public static void registerRecipes(WeaponsPlugin pl) {
+        // Scythe of Light
+        org.bukkit.inventory.ShapedRecipe slRecipe = new org.bukkit.inventory.ShapedRecipe(
+                new NamespacedKey(pl, "scythe_of_light_recipe"), getItem("scythe_of_light"));
+        slRecipe.shape("PEP", "PMP", "SNS");
+        slRecipe.setIngredient('P', Material.PLAYER_HEAD);
+        slRecipe.setIngredient('E', Material.ENCHANTED_GOLDEN_APPLE);
+        slRecipe.setIngredient('M', Material.MACE);
+        slRecipe.setIngredient('S', Material.ECHO_SHARD);
+        slRecipe.setIngredient('N', Material.NETHERITE_SWORD);
+        pl.getServer().addRecipe(slRecipe);
+    }
+
+    private static void register(String id, ItemStack item) {
+        registry.put(id, item);
+    }
 
     private static ItemStack withId(ItemStack item, String id) {
         ItemMeta meta = item.getItemMeta();
@@ -47,7 +62,8 @@ public class CustomItems {
             m.setDisplayName("§fScythe of Light");
             m.addEnchant(Enchantment.SHARPNESS, 4, true);
             m.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            m.setLore(java.util.Arrays.asList("§7A heavy blade that shines with pure light.", "§eCooldown: sword-like"));
+            m.setLore(
+                    java.util.Arrays.asList("§7A heavy blade that shines with pure light.", "§eCooldown: sword-like"));
             it.setItemMeta(m);
         }
         return withId(it, "scythe_of_light");
@@ -60,7 +76,8 @@ public class CustomItems {
             m.setDisplayName("§0Scythe of Darkness");
             m.addEnchant(Enchantment.SHARPNESS, 5, true);
             m.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            m.setLore(java.util.Arrays.asList("§7A cruel scythe swathed in shadow.", "§eRight-click: dark wave (costs 25% health)"));
+            m.setLore(java.util.Arrays.asList("§7A cruel scythe swathed in shadow.",
+                    "§eRight-click: dark wave (costs 25% health)"));
             it.setItemMeta(m);
         }
         return withId(it, "scythe_of_darkness");
@@ -106,9 +123,11 @@ public class CustomItems {
 
     // API
     public static String getId(ItemStack item) {
-        if (item == null || !item.hasItemMeta()) return null;
+        if (item == null || !item.hasItemMeta())
+            return null;
         ItemMeta meta = item.getItemMeta();
-        if (meta == null) return null;
+        if (meta == null)
+            return null;
         return meta.getPersistentDataContainer().get(key, PersistentDataType.STRING);
     }
 

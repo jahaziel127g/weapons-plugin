@@ -4,15 +4,37 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c0cec981-36ad-46c9-b7a5-83edf7a4cfe2" name="Changes" comment="- Implement WeaponsPlugin main class and plugin.yml&#10;- Add CustomItems with persistent data tags so items keep identity in chests&#10;- Implement WeaponStorage (crafted.yml) for persistence and reset support&#10;- Add RitualManager with 15-minute ritual, bossbar and item drop&#10;- Add CooldownManager and polished WeaponsListener (all weapon abilities)&#10;- Add RitualListener and commands: /ritual, /weapan, /bounty&#10;- Visual/audio polish: particles, sounds, titles, fireworks&#10;- Add POM for building with Maven (Paper 1.21, Java 21)">
+    <list default="true" id="c0cec981-36ad-46c9-b7a5-83edf7a4cfe2" name="Changes" comment="- new README.md">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/weaponsplugin.iml" beforeDir="false" afterPath="$PROJECT_DIR$/weaponsplugin.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/jahaziel/weapons/WeaponsPlugin.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/jahaziel/weapons/WeaponsPlugin.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/jahaziel/weapons/events/RitualListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/jahaziel/weapons/events/RitualListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/jahaziel/weapons/items/CustomItems.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/jahaziel/weapons/items/CustomItems.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/jahaziel/weapons/managers/RitualManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/jahaziel/weapons/managers/RitualManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/plugin.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/jahaziel/weapons/WeaponsPlugin.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/jahaziel/weapons/WeaponsPlugin.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/jahaziel/weapons/events/RitualListener.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/jahaziel/weapons/events/RitualListener.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/jahaziel/weapons/items/CustomItems.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/jahaziel/weapons/items/CustomItems.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/jahaziel/weapons/managers/RitualManager$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/jahaziel/weapons/managers/RitualManager$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/jahaziel/weapons/managers/RitualManager$BlockSnapshot.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/jahaziel/weapons/managers/RitualManager$BlockSnapshot.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/jahaziel/weapons/managers/RitualManager$RitualData.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/jahaziel/weapons/managers/RitualManager$RitualData.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/jahaziel/weapons/managers/RitualManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/jahaziel/weapons/managers/RitualManager.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/plugin.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-archiver/pom.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-archiver/pom.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/original-weaponsplugin-1.0-SNAPSHOT.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/weaponsplugin-1.0-SNAPSHOT.jar" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExportToHTMLSettings">
+    <option name="printScope" value="4" />
+    <option name="OPEN_IN_BROWSER" value="true" />
+    <option name="OUTPUT_DIRECTORY" value="$PROJECT_DIR$/exportToHTML" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -37,12 +59,18 @@
     </excluded-from-favorite>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/jahaziel127g/weapons-plugin.git",
-    "accountId": "30ca8b2a-4f6c-49c5-a224-cea7bc940715"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;jahaziel127g&quot;
   }
-}]]></component>
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/jahaziel127g/weapons-plugin.git&quot;,
+    &quot;accountId&quot;: &quot;30ca8b2a-4f6c-49c5-a224-cea7bc940715&quot;
+  }
+}</component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
   </component>
@@ -54,25 +82,30 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;Maven.weaponsplugin [clean,package].executor&quot;: &quot;Debug&quot;,
-    &quot;Maven.weaponsplugin [jar:jar].executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Maven.weaponsplugin [clean,package].executor": "Run",
+    "Maven.weaponsplugin [compile].executor": "Run",
+    "Maven.weaponsplugin [jar:jar].executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0"
   }
-}</component>
+}]]></component>
   <component name="RunAnythingCache">
     <option name="myCommands">
       <command value="mvn jar:jar" />
       <command value="mvn clean package" />
+      <command value="mvn compile" />
     </option>
   </component>
   <component name="RunManager">
@@ -154,8 +187,20 @@
       <option name="project" value="LOCAL" />
       <updated>1756565906119</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="- new README.md">
+      <option name="closed" value="true" />
+      <created>1756909108533</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1756909108533</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="dependencySupport" implementationName="java:net.kyori:adventure-api" />
+    <option featureType="dependencySupport" implementationName="java:io.papermc.paper:paper-api" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
@@ -171,6 +216,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="the new" />
     <MESSAGE value="- Implement WeaponsPlugin main class and plugin.yml&#10;- Add CustomItems with persistent data tags so items keep identity in chests&#10;- Implement WeaponStorage (crafted.yml) for persistence and reset support&#10;- Add RitualManager with 15-minute ritual, bossbar and item drop&#10;- Add CooldownManager and polished WeaponsListener (all weapon abilities)&#10;- Add RitualListener and commands: /ritual, /weapan, /bounty&#10;- Visual/audio polish: particles, sounds, titles, fireworks&#10;- Add POM for building with Maven (Paper 1.21, Java 21)" />
-    <option name="LAST_COMMIT_MESSAGE" value="- Implement WeaponsPlugin main class and plugin.yml&#10;- Add CustomItems with persistent data tags so items keep identity in chests&#10;- Implement WeaponStorage (crafted.yml) for persistence and reset support&#10;- Add RitualManager with 15-minute ritual, bossbar and item drop&#10;- Add CooldownManager and polished WeaponsListener (all weapon abilities)&#10;- Add RitualListener and commands: /ritual, /weapan, /bounty&#10;- Visual/audio polish: particles, sounds, titles, fireworks&#10;- Add POM for building with Maven (Paper 1.21, Java 21)" />
+    <MESSAGE value="- new README.md" />
+    <option name="LAST_COMMIT_MESSAGE" value="- new README.md" />
   </component>
 </project>
