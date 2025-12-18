@@ -1,14 +1,6 @@
-me\jahaziel\weapons\managers\RitualManager.class
-me\jahaziel\weapons\items\CustomItems.class
 me\jahaziel\weapons\commands\BountyCommand.class
-me\jahaziel\weapons\managers\RitualManager$1.class
-me\jahaziel\weapons\managers\CooldownManager.class
 me\jahaziel\weapons\commands\ResetCommand.class
-me\jahaziel\weapons\items\WeaponStorage.class
-me\jahaziel\weapons\events\WeaponsListener.class
-me\jahaziel\weapons\managers\RitualManager$BlockSnapshot.class
 me\jahaziel\weapons\commands\RitualCommand.class
 me\jahaziel\weapons\events\WeaponsListener$1.class
 me\jahaziel\weapons\WeaponsPlugin.class
 me\jahaziel\weapons\events\RitualListener.class
-me\jahaziel\weapons\managers\RitualManager$RitualData.class

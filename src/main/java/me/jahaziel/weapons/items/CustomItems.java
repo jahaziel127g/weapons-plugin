@@ -133,7 +133,11 @@ public class CustomItems {
         if (m != null) {
             m.setDisplayName("§5Wither Launcher");
             m.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            m.setLore(java.util.Arrays.asList("§7Fires wither heads that do not damage terrain.", "§eCooldown: 30s"));
+            m.setLore(java.util.Arrays.asList(
+                    "§7Fires wither heads that do not damage terrain.",
+                    "§7Targets: 20s Wither",
+                    "§7User: 10s Wither",
+                    "§eCooldown: 30s"));
             it.setItemMeta(m);
         }
         return withId(it, "wither_launcher");

@@ -6,11 +6,20 @@
   <component name="ChangeListManager">
     <list default="true" id="c0cec981-36ad-46c9-b7a5-83edf7a4cfe2" name="Changes" comment="- new README.md">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.vscode/settings.json" beforeDir="false" afterPath="$PROJECT_DIR$/.vscode/settings.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/jahaziel/weapons/events/RitualListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/jahaziel/weapons/events/RitualListener.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/me/jahaziel/weapons/events/WeaponsListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/jahaziel/weapons/events/WeaponsListener.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/me/jahaziel/weapons/items/CustomItems.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/jahaziel/weapons/items/CustomItems.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/plugin.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/jahaziel/weapons/events/RitualListener.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/jahaziel/weapons/events/RitualListener.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/me/jahaziel/weapons/events/WeaponsListener.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/jahaziel/weapons/events/WeaponsListener.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/me/jahaziel/weapons/items/CustomItems.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/jahaziel/weapons/items/CustomItems.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/plugin.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-archiver/pom.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-archiver/pom.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/original-weaponsplugin-4.1-beta.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/weaponsplugin-4.1-beta.jar" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -229,7 +238,15 @@
       <option name="project" value="LOCAL" />
       <updated>1766065130955</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="- new README.md">
+      <option name="closed" value="true" />
+      <created>1766073714292</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1766073714292</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="UnknownFeatures">
