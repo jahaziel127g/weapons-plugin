@@ -24,20 +24,26 @@ import java.util.UUID;
 public class WeaponsListener implements Listener {
     private final WeaponsPlugin plugin;
 
-    public WeaponsListener(WeaponsPlugin plugin) { this.plugin = plugin; }
+    public WeaponsListener(WeaponsPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @EventHandler
     public void onEntityDamage(EntityDamageByEntityEvent e) {
-        if (!(e.getDamager() instanceof Player player)) return;
+        if (!(e.getDamager() instanceof Player player))
+            return;
         ItemStack weapon = player.getInventory().getItemInMainHand();
-        if (weapon == null) return;
+        if (weapon == null)
+            return;
 
         String id = CustomItems.getId(weapon);
-        if (id == null) return;
+        if (id == null)
+            return;
 
         // SCYTHE OF LIGHT — mace-like hits but sword cooldown
         if (id.equals("scythe_of_light")) {
-            e.setDamage(e.getDamage() + 3.0);
+            // e.setDamage(e.getDamage() + 3.0); // handled by attributes now matches Sword
+            // (8)
             if (e.getEntity() instanceof LivingEntity tgt) {
                 Location p = tgt.getLocation().add(0, 1, 0);
                 // replaced removed ITEM_CRACK with END_ROD for sparkle
@@ -49,10 +55,12 @@ public class WeaponsListener implements Listener {
         // SCYTHE OF DARKNESS — reaping (pull) on hit
         if (id.equals("scythe_of_darkness")) {
             if (e.getEntity() instanceof LivingEntity tgt) {
-                Vector pull = player.getLocation().toVector().subtract(tgt.getLocation().toVector()).normalize().multiply(1.6);
+                Vector pull = player.getLocation().toVector().subtract(tgt.getLocation().toVector()).normalize()
+                        .multiply(1.6);
                 tgt.setVelocity(pull);
                 // shadow particle using CAMPFIRE_COSY_SMOKE (stable)
-                tgt.getWorld().spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, tgt.getLocation().add(0, 1, 0), 8, 0.3, 0.3, 0.3, 0.02);
+                tgt.getWorld().spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, tgt.getLocation().add(0, 1, 0), 8, 0.3, 0.3,
+                        0.3, 0.02);
             }
         }
 
@@ -80,19 +88,24 @@ public class WeaponsListener implements Listener {
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent e) {
-        if (e.getHand() != EquipmentSlot.HAND) return;
+        if (e.getHand() != EquipmentSlot.HAND)
+            return;
         Player player = e.getPlayer();
         ItemStack item = player.getInventory().getItemInMainHand();
-        if (item == null) return;
+        if (item == null)
+            return;
         String id = CustomItems.getId(item);
-        if (id == null) return;
+        if (id == null)
+            return;
 
         UUID uuid = player.getUniqueId();
 
-        // SCYTHE OF DARKNESS — right-click wave that transfers potion effects & costs 25% health
+        // SCYTHE OF DARKNESS — right-click wave that transfers potion effects & costs
+        // 25% health
         if (id.equals("scythe_of_darkness")) {
             if (CooldownManager.isOnCooldown("scythe_dark_wave", uuid)) {
-                player.sendMessage("§cScythe wave on cooldown (" + CooldownManager.getRemaining("scythe_dark_wave", uuid) + "s)");
+                player.sendMessage(
+                        "§cScythe wave on cooldown (" + CooldownManager.getRemaining("scythe_dark_wave", uuid) + "s)");
                 return;
             }
             Location eye = player.getEyeLocation();
@@ -134,7 +147,8 @@ public class WeaponsListener implements Listener {
                 return;
             }
             player.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 20 * 30, 1)); // stronger absorption
-            player.getWorld().spawnParticle(Particle.END_ROD, player.getLocation().add(0, 1, 0), 20, 0.3, 0.3, 0.3, 0.0);
+            player.getWorld().spawnParticle(Particle.END_ROD, player.getLocation().add(0, 1, 0), 20, 0.3, 0.3, 0.3,
+                    0.0);
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1.2f);
             CooldownManager.setCooldown("lifestealer_m2", uuid, 60L);
             return;
@@ -159,7 +173,8 @@ public class WeaponsListener implements Listener {
             // when skull 'hits' apply wither effects and remove skull (delayed simulate)
             Bukkit.getScheduler().runTaskLater(WeaponsPlugin.getInstance(), () -> {
                 for (Entity ent : skull.getNearbyEntities(3, 3, 3)) {
-                    if (ent instanceof LivingEntity t) t.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 20 * 20, 1));
+                    if (ent instanceof LivingEntity t)
+                        t.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 20 * 20, 1));
                 }
                 player.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 20 * 10, 1));
                 skull.remove();
@@ -169,9 +184,70 @@ public class WeaponsListener implements Listener {
             return;
         }
 
-        // KING'S CROWN cosmetic sparkle when right-clicking while wearing
         if (id.equals("kings_crown")) {
-            player.getWorld().spawnParticle(Particle.END_ROD, player.getLocation().add(0, 1.2, 0), 6, 0.2, 0.4, 0.2, 0.0);
+            player.getWorld().spawnParticle(Particle.END_ROD, player.getLocation().add(0, 1.2, 0), 6, 0.2, 0.4, 0.2,
+                    0.0);
+        }
+    }
+
+    @EventHandler
+    public void onItemDespawn(org.bukkit.event.entity.ItemDespawnEvent e) {
+        ItemStack item = e.getEntity().getItemStack();
+        String id = CustomItems.getId(item);
+        if (id != null) {
+            me.jahaziel.weapons.items.WeaponStorage.unmarkCrafted(id);
+            Bukkit.broadcastMessage("§cThe ancient " + id.replace("_", " ") + " has returned to the void (Despawned).");
+        }
+    }
+
+    @EventHandler
+    public void onItemDamage(org.bukkit.event.entity.EntityDamageEvent e) {
+        if (e.getEntity() instanceof Item itemEntity) {
+            // Items do not implement Damageable in this version, so we check the cause.
+            // These causes usually destroy items instantly.
+            switch (e.getCause()) {
+                case LAVA:
+                case VOID:
+                case FIRE:
+                case FIRE_TICK:
+                case ENTITY_EXPLOSION:
+                case BLOCK_EXPLOSION:
+                case CONTACT:
+                    ItemStack item = itemEntity.getItemStack();
+                    String id = CustomItems.getId(item);
+                    if (id != null) {
+                        me.jahaziel.weapons.items.WeaponStorage.unmarkCrafted(id);
+                        Bukkit.broadcastMessage("§cThe ancient " + id.replace("_", " ") + " has been destroyed by "
+                                + e.getCause().name().toLowerCase() + ".");
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerDeath(org.bukkit.event.entity.PlayerDeathEvent e) {
+        if (e.getEntity().getLastDamageCause() != null &&
+                e.getEntity().getLastDamageCause()
+                        .getCause() == org.bukkit.event.entity.EntityDamageEvent.DamageCause.VOID) {
+            // Logic handled by potential EntityDamageEvent/despawn if items drop in void
+            // But if we want to catch it specifically:
+            for (ItemStack drop : e.getDrops()) {
+                String id = CustomItems.getId(drop);
+                if (id != null) {
+                    // If we unmark here, we should probably remove it from drops so it doesn't
+                    // duplicate-destroy
+                    // or we accept multiple messages.
+                    // A cleaner way is just rely on the item entity falling into void if it drops.
+                    // But if keepInventory is on, or it's cleared, we might miss it.
+                    // Implementation plan said: "Iterate drops. If custom item found..."
+                    me.jahaziel.weapons.items.WeaponStorage.unmarkCrafted(id);
+                    Bukkit.broadcastMessage("§cThe ancient " + id.replace("_", " ") + " was lost in the void with "
+                            + e.getEntity().getName() + ".");
+                }
+            }
         }
     }
 }

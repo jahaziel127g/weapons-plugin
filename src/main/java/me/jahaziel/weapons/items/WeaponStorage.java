@@ -18,11 +18,15 @@ public class WeaponStorage {
 
     public static void init(WeaponsPlugin pl) {
         plugin = pl;
-        if (!plugin.getDataFolder().exists()) plugin.getDataFolder().mkdirs();
+        if (!plugin.getDataFolder().exists())
+            plugin.getDataFolder().mkdirs();
         file = new File(plugin.getDataFolder(), "crafted.yml");
         try {
-            if (!file.exists()) file.createNewFile();
-        } catch (IOException e) { e.printStackTrace(); }
+            if (!file.exists())
+                file.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         cfg = YamlConfiguration.loadConfiguration(file);
     }
 
@@ -36,10 +40,29 @@ public class WeaponStorage {
 
     public static void save() {
         cfg.set("crafted", crafted.stream().toList());
-        try { cfg.save(file); } catch (IOException e) { e.printStackTrace(); }
+        try {
+            cfg.save(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public static boolean isCrafted(String id) { return crafted.contains(id); }
-    public static void markCrafted(String id) { crafted.add(id); save(); }
-    public static void resetAll() { crafted.clear(); save(); }
+    public static boolean isCrafted(String id) {
+        return crafted.contains(id);
+    }
+
+    public static void markCrafted(String id) {
+        crafted.add(id);
+        save();
+    }
+
+    public static void unmarkCrafted(String id) {
+        crafted.remove(id);
+        save();
+    }
+
+    public static void resetAll() {
+        crafted.clear();
+        save();
+    }
 }

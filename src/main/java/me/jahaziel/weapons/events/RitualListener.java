@@ -25,10 +25,14 @@ public class RitualListener implements Listener {
         ItemStack result = e.getRecipe().getResult();
         if (CustomItems.isCustomItem(result, "scythe_of_light")) {
             if (e.getWhoClicked() instanceof org.bukkit.entity.Player p) {
+                // Check if already crafted (global limit) happens in startRitual,
+                // but we need to cancel the vanilla craft regardless.
+                e.setCancelled(true);
+
                 if (me.jahaziel.weapons.managers.RitualManager.startRitual(p, "scythe_of_light")) {
-                    e.setCurrentItem(null); // Clear result so they don't get the item immediately
-                } else {
-                    e.setCancelled(true); // Don't let them craft if ritual can't start (already running etc)
+                    // Consume items manually
+                    e.getInventory().setMatrix(new ItemStack[9]);
+                    p.closeInventory();
                 }
             }
         }

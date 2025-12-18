@@ -119,6 +119,14 @@ public class RitualManager {
     public static boolean startRitual(Player player, String itemId) {
         if (!player.isOp())
             return false;
+
+        // Global Unique Check
+        if (WeaponStorage.isCrafted(itemId)) {
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&',
+                    "&cThe ancient " + itemId.replace("_", " ") + " has already been claimed!"));
+            return false;
+        }
+
         UUID uuid = player.getUniqueId();
         if (active.containsKey(uuid)) {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&',
@@ -150,7 +158,7 @@ public class RitualManager {
                 .replace("%x%", String.valueOf(cx))
                 .replace("%y%", String.valueOf(cy))
                 .replace("%z%", String.valueOf(cz));
-        player.sendMessage(ChatColor.translateAlternateColorCodes('&', startMsg));
+        Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', startMsg));
 
         int duration = plugin.getConfig().getInt("ritual-time", 900);
         resumeRitual(uuid, center, itemId, duration, original, bar);
@@ -218,9 +226,14 @@ public class RitualManager {
         bar.removeAll();
 
         Player p = Bukkit.getPlayer(uuid);
+        String msg = plugin.getConfig().getString("messages.ritual-complete", "Ritual Complete");
+        String formatted = ChatColor.translateAlternateColorCodes('&', msg);
+
+        // Broadcast completion
+        Bukkit.broadcastMessage(formatted + " §6(" + itemId.replace("_", " ") + ")");
+
         if (p != null) {
-            String msg = plugin.getConfig().getString("messages.ritual-complete", "Ritual Complete");
-            p.sendTitle(ChatColor.translateAlternateColorCodes('&', msg), "§6" + itemId, 10, 60, 10);
+            p.sendTitle(formatted, "§6" + itemId, 10, 60, 10);
         }
         active.remove(uuid);
     }

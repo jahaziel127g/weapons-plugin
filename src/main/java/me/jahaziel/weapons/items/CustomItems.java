@@ -7,6 +7,8 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.inventory.EquipmentSlotGroup;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.HashMap;
@@ -56,14 +58,24 @@ public class CustomItems {
     }
 
     private static ItemStack createScytheOfLight() {
-        ItemStack it = new ItemStack(Material.NETHERITE_SWORD);
+        ItemStack it = new ItemStack(Material.MACE);
         ItemMeta m = it.getItemMeta();
         if (m != null) {
             m.setDisplayName("§fScythe of Light");
             m.addEnchant(Enchantment.SHARPNESS, 4, true);
             m.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            m.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
             m.setLore(
                     java.util.Arrays.asList("§7A heavy blade that shines with pure light.", "§eCooldown: sword-like"));
+
+            // Attributes
+            m.addAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, new org.bukkit.attribute.AttributeModifier(
+                    new NamespacedKey(plugin, "scythe_damage"), 8.0,
+                    org.bukkit.attribute.AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.HAND));
+            m.addAttributeModifier(Attribute.GENERIC_ATTACK_SPEED, new org.bukkit.attribute.AttributeModifier(
+                    new NamespacedKey(plugin, "scythe_speed"), -2.4,
+                    org.bukkit.attribute.AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.HAND));
+
             it.setItemMeta(m);
         }
         return withId(it, "scythe_of_light");
