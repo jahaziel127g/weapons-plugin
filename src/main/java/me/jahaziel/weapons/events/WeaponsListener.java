@@ -23,6 +23,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.UUID;
@@ -34,6 +35,21 @@ public class WeaponsListener implements Listener {
     public WeaponsListener(WeaponsPlugin plugin) {
         this.plugin = plugin;
         launcherKey = new NamespacedKey(plugin, "is_wither_launcher_projectile");
+
+        // Passive Task for King's Crown
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    ItemStack helmet = p.getInventory().getHelmet();
+                    if (helmet != null && CustomItems.isCustomItem(helmet, "kings_crown")) {
+                        p.addPotionEffect(new PotionEffect(PotionEffectType.STRENGTH, 100, 1, true, false));
+                        p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 100, 1, true, false));
+                        p.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 100, 0, true, false));
+                    }
+                }
+            }
+        }.runTaskTimer(plugin, 40L, 40L);
     }
 
     @EventHandler
@@ -78,11 +94,23 @@ public class WeaponsListener implements Listener {
             }
         }
 
-        // LIFESTEALER — heal 50% of damage dealt
+        // LIFESTEALER — heal 50% of damage dealt + optional absorption during buff
         if (id.equals("lifestealer")) {
-            double heal = e.getFinalDamage() * 0.5;
+            double damage = e.getFinalDamage();
+
+            // Passive: 50% lifesteal (Health)
+            double heal = damage * 0.5;
             double max = player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
             player.setHealth(Math.min(player.getHealth() + heal, max));
+
+            // Active: 25% absorption steal (if buff is active)
+            if (CooldownManager.isOnCooldown("lifestealer_buff_active", player.getUniqueId())) {
+                double absorption = damage * 0.25;
+                player.setAbsorptionAmount(player.getAbsorptionAmount() + absorption);
+                player.getWorld().spawnParticle(Particle.GLOW, player.getLocation().add(0, 1, 0), 4, 0.2, 0.2, 0.2,
+                        0.0);
+            }
+
             // use END_ROD + HEART instead of ITEM_CRACK
             player.getWorld().spawnParticle(Particle.HEART, player.getLocation().add(0, 1, 0), 6, 0.3, 0.3, 0.3, 0.0);
             player.getWorld().spawnParticle(Particle.END_ROD, player.getLocation().add(0, 1, 0), 8, 0.2, 0.2, 0.2, 0.0);
@@ -162,17 +190,23 @@ public class WeaponsListener implements Listener {
             return;
         }
 
-        // LIFESTEALER right-click: temporary absorption hearts
+        // LIFESTEALER right-click: 30s Absorption-steal state
         if (id.equals("lifestealer")) {
             if (CooldownManager.isOnCooldown("lifestealer_m2", uuid)) {
                 player.sendActionBar(Component.text(
                         "§cLifestealer on cooldown (" + CooldownManager.getRemaining("lifestealer_m2", uuid) + "s)"));
                 return;
             }
-            player.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 20 * 30, 1)); // stronger absorption
-            player.getWorld().spawnParticle(Particle.END_ROD, player.getLocation().add(0, 1, 0), 20, 0.3, 0.3, 0.3,
-                    0.0);
-            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1.2f);
+
+            // Start the 30s buff state
+            CooldownManager.setCooldown("lifestealer_buff_active", uuid, 30L);
+
+            // Feedback
+            player.sendActionBar(Component.text("§c§lSoul Feast Active! (30s)"));
+            player.playSound(player.getLocation(), Sound.ENTITY_WITCH_CELEBRATE, 1f, 0.8f);
+            player.getWorld().spawnParticle(Particle.SOUL, player.getLocation().add(0, 1, 0), 20, 0.3, 0.3, 0.3, 0.05);
+
+            // 1-minute global cooldown for M2
             CooldownManager.setCooldown("lifestealer_m2", uuid, 60L);
             player.setCooldown(Material.NETHERITE_SWORD, 20 * 60);
             return;

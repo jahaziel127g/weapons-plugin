@@ -1,6 +1,6 @@
 name: WeaponsPlugin
 main: me.jahaziel.weapons.WeaponsPlugin
-version: 4.3-beta
+version: 4.5-beta
 api-version: 1.21
 commands:
   ritual:

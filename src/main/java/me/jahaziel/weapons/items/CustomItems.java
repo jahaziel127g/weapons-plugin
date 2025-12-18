@@ -150,7 +150,11 @@ public class CustomItems {
             m.setDisplayName("§cLifestealer");
             m.addEnchant(Enchantment.SHARPNESS, 4, true);
             m.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            m.setLore(java.util.Arrays.asList("§7Steals life from foes.", "§eRight-click: temporary absorption (60s)"));
+            m.setLore(java.util.Arrays.asList(
+                    "§7Steals life from foes.",
+                    "§7Passive: Recover 50% damage dealt as HP.",
+                    "§7Ability: 30s Absorption-steal buff (25%).",
+                    "§eCooldown: 1 minute"));
             it.setItemMeta(m);
         }
         return withId(it, "lifestealer");
@@ -163,7 +167,15 @@ public class CustomItems {
             m.setDisplayName("§6King's Crown");
             m.setUnbreakable(true);
             m.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            m.setLore(java.util.Arrays.asList("§7Wearer gains regal might."));
+            m.setLore(java.util.Arrays.asList(
+                    "§7A crown that grants regal might.",
+                    "",
+                    "§6Passives (While Worn):",
+                    "§7 - Strength II",
+                    "§7 - Speed II",
+                    "§7 - Fire Resistance",
+                    "",
+                    "§eAbility: /bounty <player>"));
             it.setItemMeta(m);
         }
         return withId(it, "kings_crown");
