@@ -4,28 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c0cec981-36ad-46c9-b7a5-83edf7a4cfe2" name="Changes" comment="- new README.md">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/jahaziel/weapons/WeaponsPlugin.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/jahaziel/weapons/WeaponsPlugin.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/jahaziel/weapons/events/RitualListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/jahaziel/weapons/events/RitualListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/jahaziel/weapons/items/CustomItems.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/jahaziel/weapons/items/CustomItems.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/jahaziel/weapons/managers/RitualManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/jahaziel/weapons/managers/RitualManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/plugin.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/me/jahaziel/weapons/WeaponsPlugin.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/jahaziel/weapons/WeaponsPlugin.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/me/jahaziel/weapons/events/RitualListener.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/jahaziel/weapons/events/RitualListener.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/me/jahaziel/weapons/items/CustomItems.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/jahaziel/weapons/items/CustomItems.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/me/jahaziel/weapons/managers/RitualManager$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/jahaziel/weapons/managers/RitualManager$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/me/jahaziel/weapons/managers/RitualManager$BlockSnapshot.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/jahaziel/weapons/managers/RitualManager$BlockSnapshot.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/me/jahaziel/weapons/managers/RitualManager$RitualData.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/jahaziel/weapons/managers/RitualManager$RitualData.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/me/jahaziel/weapons/managers/RitualManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/jahaziel/weapons/managers/RitualManager.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/plugin.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-archiver/pom.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-archiver/pom.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/original-weaponsplugin-1.0-SNAPSHOT.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/weaponsplugin-1.0-SNAPSHOT.jar" beforeDir="false" />
-    </list>
+    <list default="true" id="c0cec981-36ad-46c9-b7a5-83edf7a4cfe2" name="Changes" comment="- new README.md" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -195,7 +174,31 @@
       <option name="project" value="LOCAL" />
       <updated>1756909108533</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="- new README.md">
+      <option name="closed" value="true" />
+      <created>1766060330273</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1766060330273</updated>
+    </task>
+    <task id="LOCAL-00007" summary="- new README.md">
+      <option name="closed" value="true" />
+      <created>1766060692811</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1766060692811</updated>
+    </task>
+    <task id="LOCAL-00008" summary="- new README.md">
+      <option name="closed" value="true" />
+      <created>1766060719985</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1766060719985</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="UnknownFeatures">
