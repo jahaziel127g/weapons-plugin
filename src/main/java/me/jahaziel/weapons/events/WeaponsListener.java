@@ -55,9 +55,15 @@ public class WeaponsListener implements Listener {
         // SCYTHE OF DARKNESS — reaping (pull) on hit
         if (id.equals("scythe_of_darkness")) {
             if (e.getEntity() instanceof LivingEntity tgt) {
-                Vector pull = player.getLocation().toVector().subtract(tgt.getLocation().toVector()).normalize()
-                        .multiply(1.6);
-                tgt.setVelocity(pull);
+                // Run 1 tick later to override vanilla knockback
+                Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                    Vector pull = player.getLocation().toVector().subtract(tgt.getLocation().toVector()).normalize()
+                            .multiply(1.2); // Reduced from 1.6 to be more controlled but still strong
+                    // lift slightly to prevent ground friction stopping it
+                    pull.setY(0.2);
+                    tgt.setVelocity(pull);
+                }, 1L);
+
                 // shadow particle using CAMPFIRE_COSY_SMOKE (stable)
                 tgt.getWorld().spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, tgt.getLocation().add(0, 1, 0), 8, 0.3, 0.3,
                         0.3, 0.02);
@@ -111,21 +117,32 @@ public class WeaponsListener implements Listener {
             Location eye = player.getEyeLocation();
             Vector dir = eye.getDirection().normalize();
 
+            // cosmetic: sound and title
+            player.playSound(player.getLocation(), Sound.ENTITY_ELDER_GUARDIAN_CURSE, 1f, 1f);
+            player.sendTitle("§5Dark Wave", "§7You feel the shadows consume you", 5, 40, 5);
+
             // visual: feather trail replaced with END_ROD + CAMPFIRE_COSY_SMOKE
-            for (int i = 1; i <= 6; i++) {
+            // We also collect targets along the line
+            java.util.Set<LivingEntity> targets = new java.util.HashSet<>();
+            for (int i = 1; i <= 8; i++) { // Increased range to 8 blocks
                 Location p = eye.clone().add(dir.clone().multiply(i));
                 p.getWorld().spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, p, 10, 0.4, 0.4, 0.4, 0.02);
                 p.getWorld().spawnParticle(Particle.END_ROD, p, 6, 0.2, 0.2, 0.2, 0.0);
+
+                // Detection: Check small radius around particle point
+                for (Entity ent : p.getWorld().getNearbyEntities(p, 1.5, 1.5, 1.5)) {
+                    if (ent instanceof LivingEntity tgt && !tgt.equals(player)) {
+                        targets.add(tgt);
+                    }
+                }
             }
 
             // affect targets
-            for (Entity ent : player.getNearbyEntities(5, 2, 5)) {
-                if (ent instanceof LivingEntity tgt && !tgt.equals(player)) {
-                    tgt.damage(6, player);
-                    // transfer potion effects
-                    for (PotionEffect eff : player.getActivePotionEffects()) {
-                        tgt.addPotionEffect(new PotionEffect(eff.getType(), eff.getDuration(), eff.getAmplifier()));
-                    }
+            for (LivingEntity tgt : targets) {
+                tgt.damage(6, player);
+                // transfer potion effects
+                for (PotionEffect eff : player.getActivePotionEffects()) {
+                    tgt.addPotionEffect(new PotionEffect(eff.getType(), eff.getDuration(), eff.getAmplifier()));
                 }
             }
 
@@ -133,10 +150,6 @@ public class WeaponsListener implements Listener {
             double cost = Math.max(1.0, player.getHealth() * 0.25);
             player.damage(cost);
             CooldownManager.setCooldown("scythe_dark_wave", uuid, 10L);
-
-            // cosmetic: sound and title
-            player.playSound(player.getLocation(), Sound.ENTITY_ELDER_GUARDIAN_CURSE, 1f, 1f);
-            player.sendTitle("§5Dark Wave", "§7You feel the shadows consume you", 5, 40, 5);
             return;
         }
 

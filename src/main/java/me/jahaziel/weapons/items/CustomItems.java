@@ -82,14 +82,46 @@ public class CustomItems {
     }
 
     private static ItemStack createScytheOfDarkness() {
-        ItemStack it = new ItemStack(Material.NETHERITE_AXE);
+        ItemStack it = new ItemStack(Material.NETHERITE_SWORD);
         ItemMeta m = it.getItemMeta();
         if (m != null) {
             m.setDisplayName("§0Scythe of Darkness");
+            // Remove Shadow Enchantment Glint if desired, but user kept SHARPNESS 5.
             m.addEnchant(Enchantment.SHARPNESS, 5, true);
             m.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            m.setLore(java.util.Arrays.asList("§7A cruel scythe swathed in shadow.",
-                    "§eRight-click: dark wave (costs 25% health)"));
+            m.addItemFlags(ItemFlag.HIDE_ATTRIBUTES); // Hide attributes so we don't see the messy modifiers
+            m.setLore(java.util.Arrays.asList(
+                    "§7A cruel scythe swathed in shadow.",
+                    "§7Reaping I",
+                    "§7Spewing I",
+                    "",
+                    "§eRight-click: Spewing (Wave of Darkness)",
+                    "§ePassive: Reaping (Pull entities)"));
+
+            // Attributes:
+            // Netherite Sword Base: 8 Dmg, 1.6 Speed
+            // Desired (Netherite Axe): 10 Dmg, 1.0 Speed
+            // Modifiers need to be additive or adjustment.
+            // GENERIC_ATTACK_DAMAGE: Base is 1 (fist) + Sword (7) = 8? No, Base of Sword is
+            // 8?
+            // Actually, AttributeModifier ADD_NUMBER adds to the base of the ITEM? or the
+            // Player?
+            // "When an item has custom attributes, the default attributes for that item are
+            // removed." - Minecraft Wiki
+            // So if we add ANY attribute, we lose the default Sword attributes.
+            // We need to reconstruct them.
+            // We want Total = 10 Damage, 1.0 Speed.
+            // Base Player = 1 Damage, 4.0 Speed.
+            // Modifier for Damage = 10 - 1 = 9.
+            // Modifier for Speed = 1.0 - 4.0 = -3.0.
+
+            m.addAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, new org.bukkit.attribute.AttributeModifier(
+                    new NamespacedKey(plugin, "scythe_dark_damage"), 9.0,
+                    org.bukkit.attribute.AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.HAND));
+            m.addAttributeModifier(Attribute.GENERIC_ATTACK_SPEED, new org.bukkit.attribute.AttributeModifier(
+                    new NamespacedKey(plugin, "scythe_dark_speed"), -3.0,
+                    org.bukkit.attribute.AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.HAND));
+
             it.setItemMeta(m);
         }
         return withId(it, "scythe_of_darkness");
