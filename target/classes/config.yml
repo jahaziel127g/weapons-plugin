@@ -1,0 +1,9 @@
+# WeaponsPlugin Configuration
+
+# Duration of the ritual in seconds (default: 900 = 15 minutes)
+ritual-time: 10
+
+messages:
+  ritual-start: "&aRitual started for &f%item% &aat coordinates: &6%x% %y% %z%"
+  ritual-already-running: "&cYou already have a ritual running."
+  ritual-complete: "&aRitual Complete"

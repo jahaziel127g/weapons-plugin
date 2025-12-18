@@ -1,0 +1,41 @@
+<html>
+<head>
+<title>RitualListener.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #6aab73;}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+RitualListener.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">me</span><span class="s2">.</span><span class="s1">jahaziel</span><span class="s2">.</span><span class="s1">weapons</span><span class="s2">.</span><span class="s1">events</span><span class="s2">;</span>
+
+<span class="s0">import </span><span class="s1">me</span><span class="s2">.</span><span class="s1">jahaziel</span><span class="s2">.</span><span class="s1">weapons</span><span class="s2">.</span><span class="s1">items</span><span class="s2">.</span><span class="s1">CustomItems</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">bukkit</span><span class="s2">.</span><span class="s1">event</span><span class="s2">.</span><span class="s1">EventHandler</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">bukkit</span><span class="s2">.</span><span class="s1">event</span><span class="s2">.</span><span class="s1">Listener</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">bukkit</span><span class="s2">.</span><span class="s1">event</span><span class="s2">.</span><span class="s1">player</span><span class="s2">.</span><span class="s1">PlayerInteractEvent</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">org</span><span class="s2">.</span><span class="s1">bukkit</span><span class="s2">.</span><span class="s1">inventory</span><span class="s2">.</span><span class="s1">ItemStack</span><span class="s2">;</span>
+
+<span class="s0">public class </span><span class="s1">RitualListener </span><span class="s0">implements </span><span class="s1">Listener </span><span class="s2">{</span>
+    <span class="s1">@EventHandler</span>
+    <span class="s0">public void </span><span class="s1">onRitualUse</span><span class="s2">(</span><span class="s1">PlayerInteractEvent e</span><span class="s2">) {</span>
+        <span class="s1">ItemStack item </span><span class="s2">= </span><span class="s1">e</span><span class="s2">.</span><span class="s1">getItem</span><span class="s2">();</span>
+        <span class="s0">if </span><span class="s2">(</span><span class="s1">item</span><span class="s2">==</span><span class="s0">null</span><span class="s2">) </span><span class="s0">return</span><span class="s2">;</span>
+        <span class="s1">String</span><span class="s2">[] </span><span class="s1">ids </span><span class="s2">= {</span><span class="s3">&quot;scythe_of_light&quot;</span><span class="s2">, </span><span class="s3">&quot;scythe_of_darkness&quot;</span><span class="s2">, </span><span class="s3">&quot;wither_launcher&quot;</span><span class="s2">, </span><span class="s3">&quot;lifestealer&quot;</span><span class="s2">, </span><span class="s3">&quot;kings_crown&quot;</span><span class="s2">};</span>
+        <span class="s0">for </span><span class="s2">(</span><span class="s1">String id </span><span class="s2">: </span><span class="s1">ids</span><span class="s2">) {</span>
+            <span class="s0">if </span><span class="s2">(</span><span class="s1">CustomItems</span><span class="s2">.</span><span class="s1">isCustomItem</span><span class="s2">(</span><span class="s1">item</span><span class="s2">, </span><span class="s1">id</span><span class="s2">)) {</span>
+                <span class="s1">e</span><span class="s2">.</span><span class="s1">getPlayer</span><span class="s2">().</span><span class="s1">sendMessage</span><span class="s2">(</span><span class="s3">&quot;§a[Plugin] Recognized: &quot; </span><span class="s2">+ </span><span class="s1">id</span><span class="s2">);</span>
+            <span class="s2">}</span>
+        <span class="s2">}</span>
+    <span class="s2">}</span>
+<span class="s2">}</span>
+</pre>
+</body>
+</html>
