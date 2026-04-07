@@ -33,23 +33,20 @@ import java.util.UUID;
 public class WeaponsListener implements Listener {
     private final WeaponsPlugin plugin;
     private static NamespacedKey launcherKey;
-        private NamespacedKey crownTouchKey;
-        private final java.util.Map<UUID, ItemStack> recentPickupMap = new java.util.HashMap<>();
+    private NamespacedKey crownTouchKey;
+    private final java.util.Map<UUID, ItemStack> recentPickupMap = new java.util.HashMap<>();
 
     public WeaponsListener(WeaponsPlugin plugin) {
         this.plugin = plugin;
         launcherKey = new NamespacedKey(plugin, "is_wither_launcher_projectile");
-            crownTouchKey = new NamespacedKey(plugin, "kings_crown_last_touch");
+        crownTouchKey = new NamespacedKey(plugin, "kings_crown_last_touch");
 
-        // Passive Task for King's Crown and duplicate prevention
         new BukkitRunnable() {
             @Override
             public void run() {
                 for (Player p : Bukkit.getOnlinePlayers()) {
-                    // Check for and remove duplicates
                     removeCrownDuplicates(p, null);
                     
-                    // Apply buffs if wearing the crown
                     ItemStack helmet = p.getInventory().getHelmet();
                     if (helmet != null && CustomItems.isCustomItem(helmet, "kings_crown")) {
                         p.addPotionEffect(new PotionEffect(PotionEffectType.STRENGTH, 100, 1, true, false));
@@ -73,46 +70,35 @@ public class WeaponsListener implements Listener {
         if (id == null)
             return;
 
-        // SCYTHE OF LIGHT — mace-like hits but sword cooldown
         if (id.equals("scythe_of_light")) {
-            // e.setDamage(e.getDamage() + 3.0); // handled by attributes now matches Sword
-            // (8)
             if (e.getEntity() instanceof LivingEntity tgt) {
                 Location p = tgt.getLocation().add(0, 1, 0);
-                // replaced removed ITEM_CRACK with END_ROD for sparkle
                 tgt.getWorld().spawnParticle(Particle.END_ROD, p, 12, 0.4, 0.4, 0.4, 0.0);
                 tgt.getWorld().playSound(p, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 0.8f, 1f);
             }
         }
 
-        // SCYTHE OF DARKNESS — reaping (pull) on hit
         if (id.equals("scythe_of_darkness")) {
             if (e.getEntity() instanceof LivingEntity tgt) {
-                // Run 1 tick later to override vanilla knockback
                 Bukkit.getScheduler().runTaskLater(plugin, () -> {
                     Vector pull = player.getLocation().toVector().subtract(tgt.getLocation().toVector()).normalize()
-                            .multiply(1.2); // Reduced from 1.6 to be more controlled but still strong
-                    // lift slightly to prevent ground friction stopping it
+                            .multiply(1.2);
                     pull.setY(0.2);
                     tgt.setVelocity(pull);
                 }, 1L);
 
-                // shadow particle using CAMPFIRE_COSY_SMOKE (stable)
                 tgt.getWorld().spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, tgt.getLocation().add(0, 1, 0), 8, 0.3, 0.3,
                         0.3, 0.02);
             }
         }
 
-        // LIFESTEALER — heal 50% of damage dealt + optional absorption during buff
         if (id.equals("lifestealer")) {
             double damage = e.getFinalDamage();
 
-            // Passive: 50% lifesteal (Health)
             double heal = damage * 0.5;
             double max = player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
             player.setHealth(Math.min(player.getHealth() + heal, max));
 
-            // Active: 25% absorption steal (if buff is active)
             if (CooldownManager.isOnCooldown("lifestealer_buff_active", player.getUniqueId())) {
                 double absorption = damage * 0.25;
                 player.setAbsorptionAmount(player.getAbsorptionAmount() + absorption);
@@ -120,12 +106,10 @@ public class WeaponsListener implements Listener {
                         0.0);
             }
 
-            // use END_ROD + HEART instead of ITEM_CRACK
             player.getWorld().spawnParticle(Particle.HEART, player.getLocation().add(0, 1, 0), 6, 0.3, 0.3, 0.3, 0.0);
             player.getWorld().spawnParticle(Particle.END_ROD, player.getLocation().add(0, 1, 0), 8, 0.2, 0.2, 0.2, 0.0);
         }
 
-        // WITHER LAUNCHER — backup on-hit effect
         if (id.equals("wither_launcher")) {
             if (!CooldownManager.isOnCooldown("wither_launcher", player.getUniqueId())) {
                 if (e.getEntity() instanceof LivingEntity tgt) {
@@ -151,8 +135,6 @@ public class WeaponsListener implements Listener {
 
         UUID uuid = player.getUniqueId();
 
-        // SCYTHE OF DARKNESS — right-click wave that transfers potion effects & costs
-        // 25% health
         if (id.equals("scythe_of_darkness")) {
             if (CooldownManager.isOnCooldown("scythe_dark_wave", uuid)) {
                 player.sendActionBar(Component.text(
@@ -162,19 +144,15 @@ public class WeaponsListener implements Listener {
             Location eye = player.getEyeLocation();
             Vector dir = eye.getDirection().normalize();
 
-            // cosmetic: sound and title
             player.playSound(player.getLocation(), Sound.ENTITY_ELDER_GUARDIAN_CURSE, 1f, 1f);
             player.sendTitle("§5Dark Wave", "§7You feel the shadows consume you", 5, 40, 5);
 
-            // visual: feather trail replaced with END_ROD + CAMPFIRE_COSY_SMOKE
-            // We also collect targets along the line
             java.util.Set<LivingEntity> targets = new java.util.HashSet<>();
-            for (int i = 1; i <= 8; i++) { // Increased range to 8 blocks
+            for (int i = 1; i <= 8; i++) {
                 Location p = eye.clone().add(dir.clone().multiply(i));
                 p.getWorld().spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, p, 10, 0.4, 0.4, 0.4, 0.02);
                 p.getWorld().spawnParticle(Particle.END_ROD, p, 6, 0.2, 0.2, 0.2, 0.0);
 
-                // Detection: Check small radius around particle point
                 for (Entity ent : p.getWorld().getNearbyEntities(p, 1.5, 1.5, 1.5)) {
                     if (ent instanceof LivingEntity tgt && !tgt.equals(player)) {
                         targets.add(tgt);
@@ -182,16 +160,13 @@ public class WeaponsListener implements Listener {
                 }
             }
 
-            // affect targets
             for (LivingEntity tgt : targets) {
                 tgt.damage(6, player);
-                // transfer potion effects
                 for (PotionEffect eff : player.getActivePotionEffects()) {
                     tgt.addPotionEffect(new PotionEffect(eff.getType(), eff.getDuration(), eff.getAmplifier()));
                 }
             }
 
-            // cost player 25% health
             double cost = Math.max(1.0, player.getHealth() * 0.25);
             player.damage(cost);
             CooldownManager.setCooldown("scythe_dark_wave", uuid, 10L);
@@ -199,7 +174,6 @@ public class WeaponsListener implements Listener {
             return;
         }
 
-        // LIFESTEALER right-click: 30s Absorption-steal state
         if (id.equals("lifestealer")) {
             if (CooldownManager.isOnCooldown("lifestealer_m2", uuid)) {
                 player.sendActionBar(Component.text(
@@ -207,21 +181,17 @@ public class WeaponsListener implements Listener {
                 return;
             }
 
-            // Start the 30s buff state
             CooldownManager.setCooldown("lifestealer_buff_active", uuid, 30L);
 
-            // Feedback
             player.sendActionBar(Component.text("§c§lSoul Feast Active! (30s)"));
             player.playSound(player.getLocation(), Sound.ENTITY_WITCH_CELEBRATE, 1f, 0.8f);
             player.getWorld().spawnParticle(Particle.SOUL, player.getLocation().add(0, 1, 0), 20, 0.3, 0.3, 0.3, 0.05);
 
-            // 1-minute global cooldown for M2
             CooldownManager.setCooldown("lifestealer_m2", uuid, 60L);
             player.setCooldown(Material.NETHERITE_SWORD, 20 * 60);
             return;
         }
 
-        // WITHER LAUNCHER right-click: spawn wither skull (non-destructive)
         if (id.equals("wither_launcher")) {
             if (CooldownManager.isOnCooldown("wither_launcher", uuid)) {
                 player.sendActionBar(Component.text("§cWither Launcher on cooldown ("
@@ -235,7 +205,6 @@ public class WeaponsListener implements Listener {
             skull.setIsIncendiary(false);
             skull.getPersistentDataContainer().set(launcherKey, PersistentDataType.BYTE, (byte) 1);
 
-            // visual trail around launch (END_ROD)
             player.getWorld().spawnParticle(Particle.END_ROD, spawn, 12, 0.5, 0.5, 0.5, 0.0);
             player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SHOOT, 1f, 0.9f);
 
@@ -261,7 +230,6 @@ public class WeaponsListener implements Listener {
         loc.getWorld().spawnParticle(Particle.LARGE_SMOKE, loc, 30, 0.5, 0.5, 0.5, 0.1);
         loc.getWorld().playSound(loc, Sound.ENTITY_GENERIC_EXPLODE, 1f, 1.2f);
 
-        // Apply effects
         for (Entity ent : skull.getNearbyEntities(4, 4, 4)) {
             if (ent instanceof LivingEntity target) {
                 target.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 20 * 20, 1));
@@ -277,7 +245,7 @@ public class WeaponsListener implements Listener {
     public void onEntityExplode(EntityExplodeEvent e) {
         if (e.getEntity() instanceof WitherSkull skull) {
             if (skull.getPersistentDataContainer().has(launcherKey, PersistentDataType.BYTE)) {
-                e.blockList().clear(); // Protect terrain
+                e.blockList().clear();
             }
         }
     }
@@ -288,34 +256,27 @@ public class WeaponsListener implements Listener {
             return;
         }
 
-        // Only handle the player's own inventory
         if (!e.getInventory().equals(player.getInventory())) {
             return;
         }
 
-        // Helmet slot is 39 in the player inventory
         if (e.getRawSlot() != 39) {
             return;
         }
 
         ItemStack cursor = e.getCursor();
 
-        // Check if crown is being equipped from cursor
-            boolean cursorHasCrown = CustomItems.isCustomItem(cursor, "kings_crown");
+        boolean cursorHasCrown = CustomItems.isCustomItem(cursor, "kings_crown");
 
-        // If a crown is being equipped to the helmet slot
         if (cursorHasCrown || (e.isShiftClick() && cursorHasCrown)) {
-            // Remove from off-hand to prevent duplication
             ItemStack offhand = player.getInventory().getItemInOffHand();
             if (CustomItems.isCustomItem(offhand, "kings_crown")) {
                 player.getInventory().setItemInOffHand(null);
             }
-            // Also remove from main hand
             ItemStack mainHand = player.getInventory().getItemInMainHand();
             if (CustomItems.isCustomItem(mainHand, "kings_crown")) {
                 player.getInventory().setItemInMainHand(null);
             }
-            // Tag the destination slot as last-touched so cleanup preserves it
             final int raw = e.getRawSlot();
             Bukkit.getScheduler().runTaskLater(plugin, () -> tagSlotLastTouch(player, raw), 1L);
         }
@@ -323,7 +284,6 @@ public class WeaponsListener implements Listener {
 
     @EventHandler
     public void onInventoryClickCleanup(InventoryClickEvent e) {
-        // Post-click cleanup: if crown ends up in multiple slots, remove duplicates
         if (!(e.getWhoClicked() instanceof Player player)) {
             return;
         }
@@ -331,7 +291,6 @@ public class WeaponsListener implements Listener {
         if (!e.getInventory().equals(player.getInventory())) {
             return;
         }
-        // Run after the event to check for duplicates; preserve the raw slot if applicable
         final Integer preserve = Integer.valueOf(e.getRawSlot());
         Bukkit.getScheduler().runTaskLater(plugin, () -> removeCrownDuplicates(player, preserve), 1L);
     }
@@ -342,12 +301,10 @@ public class WeaponsListener implements Listener {
         ItemStack picked = e.getItem().getItemStack();
         if (!CustomItems.isCustomItem(picked, "kings_crown")) return;
 
-        // Store snapshot so we can prefer to preserve the picked item after it is added
         recentPickupMap.put(player.getUniqueId(), picked.clone());
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             ItemStack snapshot = recentPickupMap.remove(player.getUniqueId());
             if (snapshot == null) return;
-            // Try to find a crown matching the snapshot in inventory and tag it
             for (int i = 0; i < 36; i++) {
                 ItemStack it = player.getInventory().getItem(i);
                 if (it != null && CustomItems.isCustomItem(it, "kings_crown") && matchSnapshot(it, snapshot)) {
@@ -355,7 +312,6 @@ public class WeaponsListener implements Listener {
                     break;
                 }
             }
-            // also check helmet and offhand
             ItemStack helm = player.getInventory().getHelmet();
             if (helm != null && CustomItems.isCustomItem(helm, "kings_crown") && matchSnapshot(helm, snapshot)) {
                 tagSlotLastTouch(player, 39);
@@ -364,7 +320,6 @@ public class WeaponsListener implements Listener {
             if (off != null && CustomItems.isCustomItem(off, "kings_crown") && matchSnapshot(off, snapshot)) {
                 tagSlotLastTouch(player, 40);
             }
-            // finally run the duplicate cleanup
             removeCrownDuplicates(player, null);
         }, 1L);
     }
@@ -383,21 +338,15 @@ public class WeaponsListener implements Listener {
         return (da == null ? db == null : da.equals(db));
     }
 
-    /**
-     * Removes duplicate crowns from a player's inventory, keeping only one.
-     * If preserveRawSlot is non-null and contains a crown, that crown will be preserved.
-     */
     private void removeCrownDuplicates(Player player, Integer preserveRawSlot) {
         class CrownLoc { int slot; ItemStack item; long touch; }
         java.util.List<CrownLoc> crowns = new java.util.ArrayList<>();
 
-        // Helmet (raw slot 39)
         ItemStack helmet = player.getInventory().getHelmet();
         if (CustomItems.isCustomItem(helmet, "kings_crown")) {
             CrownLoc c = new CrownLoc(); c.slot = 39; c.item = helmet; c.touch = getLastTouch(helmet); crowns.add(c);
         }
 
-        // Main inventory slots 0-35
         for (int i = 0; i < 36; i++) {
             ItemStack it = player.getInventory().getItem(i);
             if (CustomItems.isCustomItem(it, "kings_crown")) {
@@ -405,22 +354,18 @@ public class WeaponsListener implements Listener {
             }
         }
 
-        // Off-hand (raw slot 40)
         ItemStack off = player.getInventory().getItemInOffHand();
         if (CustomItems.isCustomItem(off, "kings_crown")) {
             CrownLoc c = new CrownLoc(); c.slot = 40; c.item = off; c.touch = getLastTouch(off); crowns.add(c);
         }
 
-        // Main hand
         ItemStack main = player.getInventory().getItemInMainHand();
         if (CustomItems.isCustomItem(main, "kings_crown")) {
-            int mhSlot = player.getInventory().getHeldItemSlot();
-            CrownLoc c = new CrownLoc(); c.slot = mhSlot; c.item = main; c.touch = getLastTouch(main); crowns.add(c);
+            CrownLoc c = new CrownLoc(); c.slot = 36; c.item = main; c.touch = getLastTouch(main); crowns.add(c);
         }
 
         if (crowns.size() <= 1) return;
 
-        // Determine preserve candidate
         CrownLoc preserve = null;
         if (preserveRawSlot != null) {
             for (CrownLoc c : crowns) if (c.slot == preserveRawSlot) preserve = c;
@@ -438,7 +383,7 @@ public class WeaponsListener implements Listener {
             if (c.slot == 39) player.getInventory().setHelmet(null);
             else if (c.slot == 40) player.getInventory().setItemInOffHand(null);
             else if (c.slot >= 0 && c.slot < 36) player.getInventory().setItem(c.slot, null);
-            else if (c.slot == player.getInventory().getHeldItemSlot()) player.getInventory().setItemInMainHand(null);
+            else if (c.slot == 36) player.getInventory().setItemInMainHand(null);
         }
     }
 
@@ -478,8 +423,6 @@ public class WeaponsListener implements Listener {
     @EventHandler
     public void onItemDamage(org.bukkit.event.entity.EntityDamageEvent e) {
         if (e.getEntity() instanceof Item itemEntity) {
-            // Items do not implement Damageable in this version, so we check the cause.
-            // These causes usually destroy items instantly.
             switch (e.getCause()) {
                 case LAVA:
                 case VOID:
@@ -507,17 +450,9 @@ public class WeaponsListener implements Listener {
         if (e.getEntity().getLastDamageCause() != null &&
                 e.getEntity().getLastDamageCause()
                         .getCause() == org.bukkit.event.entity.EntityDamageEvent.DamageCause.VOID) {
-            // Logic handled by potential EntityDamageEvent/despawn if items drop in void
-            // But if we want to catch it specifically:
             for (ItemStack drop : e.getDrops()) {
                 String id = CustomItems.getId(drop);
                 if (id != null) {
-                    // If we unmark here, we should probably remove it from drops so it doesn't
-                    // duplicate-destroy
-                    // or we accept multiple messages.
-                    // A cleaner way is just rely on the item entity falling into void if it drops.
-                    // But if keepInventory is on, or it's cleared, we might miss it.
-                    // Implementation plan said: "Iterate drops. If custom item found..."
                     me.jahaziel.weapons.items.WeaponStorage.unmarkCrafted(id);
                     Bukkit.broadcastMessage("§cThe ancient " + id.replace("_", " ") + " was lost in the void with "
                             + e.getEntity().getName() + ".");

@@ -15,7 +15,7 @@ Each weapon has unique abilities and textures (via CustomModelData).
   - *Ability*: **Dark Wave** (Right-click). Launches a wave of shadow particles that damages enemies and transfers your potion effects to them. Costs 25% health.
   - *Passive*: **Reap**. Pulls enemies towards you on hit.
 - **Wither Launcher** (Crossbow)
-  - *Ability*: **Wither Shot**. Leunches a non-destructive Wither Skull.
+  - *Ability*: **Wither Shot**. Launches a non-destructive Wither Skull.
   - *Effect*: Applies Wither II to targets on impact.
 - **Lifestealer** (Netherite Sword)
   - *Passive*: Heals wielder for 50% of damage dealt.
@@ -40,6 +40,68 @@ If a Legendary Weapon is lost, it can be crafted again.
   - Player dies in the **Void**.
 - **Effect**: A global message announces the destruction of the ancient weapon, and it is automatically unmarked from the registry, allowing a new ritual to start.
 
+## Crafting Recipes
+
+### Scythe of Light
+```
+P E P
+P M P
+S N S
+
+P = Player Head
+E = Enchanted Golden Apple
+M = Mace
+S = Echo Shard
+N = Netherite Sword
+```
+
+### Scythe of Darkness
+```
+S E S
+S M S
+S P S
+
+S = Shulker Shell
+E = Echo Shard
+M = Netherite Axe
+P = Phantom Membrane
+```
+
+### Wither Launcher
+```
+W S W
+C B C
+W C W
+
+W = Wither Skeleton Skull
+S = Echo Shard
+C = Crossbow
+B = Blaze Powder
+```
+
+### Lifestealer
+```
+H H H
+H S H
+H N H
+
+H = Heart of the Sea
+S = Netherite Sword
+N = Nether Star
+```
+
+### King's Crown
+```
+G D G
+G H G
+N G N
+
+G = Gold Ingot
+D = Diamond
+H = Netherite Helmet
+N = Netherite Ingot
+```
+
 ## Commands
 
 - `/ritual <item_id>` - Start a ritual for a specific item (OP only).
@@ -54,3 +116,8 @@ If a Legendary Weapon is lost, it can be crafted again.
 
 ## Permissions
 - `weapons.waiting` (Default: OP) - Required for commands.
+
+## Building
+```bash
+mvn clean package
+```

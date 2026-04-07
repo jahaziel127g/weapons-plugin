@@ -43,56 +43,24 @@ public class RitualManager {
             Location center = cfg.getLocation(path + ".center");
 
             List<BlockSnapshot> original = new ArrayList<>();
-            List<?> rawBlocks = cfg.getList(path + ".blocks");
-            if (rawBlocks != null) {
-                for (Object o : rawBlocks) {
-                    if (o instanceof String s) { // manual serialization simplicity
-                        // format: world,x,y,z,MATERIAL,dataString
-                        String[] parts = s.split(";", 4);
-                        if (parts.length >= 3) {
-                            // recreating simplistic snapshot
-                            // Note: full block data serialization is complex, simplifying for this quick
-                            // fix
-                            // We will just restore material.
-                        }
-                    }
+            List<Map<?, ?>> blockList = cfg.getMapList(path + ".blocks");
+            if (blockList != null) {
+                for (Map<?, ?> map : blockList) {
+                    Location loc = (Location) map.get("loc");
+                    Material mat = Material.valueOf((String) map.get("type"));
+                    original.add(new BlockSnapshot(loc, mat, null));
                 }
             }
 
-            // Full persistence of block restoration is complex due to BlockData
-            // serialization.
-            // For this iteration, we will implement a simplified robust restore:
-            // We'll just clear the ritual blocks (beacon/spruce) if they exist at center.
-            // Actually, let's just properly serialize the location and material.
-
-            // Retrying load logic to be robust:
-            // If we are restoring, we need to restart the task.
-            // However, we lost the "original" block list efficiently.
-            // Strategy: scan the area again. If it's spruce/beacon, we assume it's part of
-            // the ritual
-            // but we won't know what was there BEFORE.
-
-            // BETTER STRATEGY:
-            // Since we can't easily serialize generic BlockData without NMS or verbose
-            // adapters,
-            // we will just save the LIST of locations and their original Materials.
-
-            List<Map<?, ?>> blockList = cfg.getMapList(path + ".blocks");
-            for (Map<?, ?> map : blockList) {
-                Location loc = (Location) map.get("loc");
-                Material mat = Material.valueOf((String) map.get("type"));
-                original.add(new BlockSnapshot(loc, mat, null));
-            }
-
             BossBar bar = Bukkit.createBossBar("Ritual: " + itemId, BarColor.PURPLE, BarStyle.SEGMENTED_20);
-            bar.addPlayer(Bukkit.getPlayer(uuid)); // might be null if offline, that's fine
+            bar.addPlayer(Bukkit.getPlayer(uuid));
 
             resumeRitual(uuid, center, itemId, remaining, original, bar);
         }
     }
 
     public static void save() {
-        cfg.set("rituals", null); // clear old
+        cfg.set("rituals", null);
         for (Map.Entry<UUID, RitualData> entry : active.entrySet()) {
             String path = "rituals." + entry.getKey();
             RitualData d = entry.getValue();
@@ -112,7 +80,7 @@ public class RitualManager {
         try {
             cfg.save(file);
         } catch (Exception e) {
-            e.printStackTrace();
+            plugin.getLogger().warning("Failed to save rituals: " + e.getMessage());
         }
     }
 
@@ -120,7 +88,12 @@ public class RitualManager {
         if (!player.isOp())
             return false;
 
-        // Global Unique Check
+        if (!CustomItems.isValidItemId(itemId)) {
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&',
+                    "&cUnknown item: " + itemId));
+            return false;
+        }
+
         if (WeaponStorage.isCrafted(itemId)) {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&',
                     "&cThe ancient " + itemId.replace("_", " ") + " has already been claimed!"));
@@ -168,7 +141,6 @@ public class RitualManager {
     private static void resumeRitual(UUID uuid, Location center, String itemId, int initialRemaining,
             List<BlockSnapshot> original, BossBar bar) {
         int totalDuration = plugin.getConfig().getInt("ritual-time", 900);
-        // avoid div by zero
         if (totalDuration <= 0)
             totalDuration = 1;
 
@@ -180,7 +152,6 @@ public class RitualManager {
             public void run() {
                 remaining[0]--;
 
-                // Visuals
                 if (remaining[0] % 5 == 0) {
                     center.getWorld().spawnParticle(Particle.WITCH, center.clone().add(0, 1, 0), 10, 0.5, 0.5, 0.5,
                             0.05);
@@ -204,13 +175,15 @@ public class RitualManager {
     private static void completeRitual(UUID uuid, Location center, String itemId, List<BlockSnapshot> original,
             BossBar bar) {
         World world = center.getWorld();
-        // restore blocks
         for (BlockSnapshot s : original) {
             org.bukkit.block.Block b = world.getBlockAt(s.loc);
             b.setType(s.material, false);
-            try {
-                b.setBlockData(s.blockData);
-            } catch (Exception ignored) {
+            if (s.blockData != null) {
+                try {
+                    b.setBlockData(s.blockData);
+                } catch (Exception e) {
+                    plugin.getLogger().warning("Failed to restore block data at " + s.loc);
+                }
             }
         }
         ItemStack created = CustomItems.getItem(itemId);
@@ -229,7 +202,6 @@ public class RitualManager {
         String msg = plugin.getConfig().getString("messages.ritual-complete", "Ritual Complete");
         String formatted = ChatColor.translateAlternateColorCodes('&', msg);
 
-        // Broadcast completion
         Bukkit.broadcastMessage(formatted + " §6(" + itemId.replace("_", " ") + ")");
 
         if (p != null) {

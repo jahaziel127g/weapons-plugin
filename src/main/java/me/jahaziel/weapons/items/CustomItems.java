@@ -23,7 +23,6 @@ public class CustomItems {
         plugin = pl;
         key = new NamespacedKey(pl, "custom_weapon_id");
 
-        // register items
         register("scythe_of_light", createScytheOfLight());
         register("scythe_of_darkness", createScytheOfDarkness());
         register("wither_launcher", createWitherLauncher());
@@ -42,6 +41,45 @@ public class CustomItems {
         slRecipe.setIngredient('S', Material.ECHO_SHARD);
         slRecipe.setIngredient('N', Material.NETHERITE_SWORD);
         pl.getServer().addRecipe(slRecipe);
+
+        // Scythe of Darkness
+        org.bukkit.inventory.ShapedRecipe sdRecipe = new org.bukkit.inventory.ShapedRecipe(
+                new NamespacedKey(pl, "scythe_of_darkness_recipe"), getItem("scythe_of_darkness"));
+        sdRecipe.shape("SES", "SMS", "SPS");
+        sdRecipe.setIngredient('S', Material.SHULKER_SHELL);
+        sdRecipe.setIngredient('E', Material.ECHO_SHARD);
+        sdRecipe.setIngredient('M', Material.NETHERITE_AXE);
+        sdRecipe.setIngredient('P', Material.PHANTOM_MEMBRANE);
+        pl.getServer().addRecipe(sdRecipe);
+
+        // Wither Launcher
+        org.bukkit.inventory.ShapedRecipe wlRecipe = new org.bukkit.inventory.ShapedRecipe(
+                new NamespacedKey(pl, "wither_launcher_recipe"), getItem("wither_launcher"));
+        wlRecipe.shape("WSW", "CBC", "WCW");
+        wlRecipe.setIngredient('W', Material.WITHER_SKELETON_SKULL);
+        wlRecipe.setIngredient('S', Material.ECHO_SHARD);
+        wlRecipe.setIngredient('C', Material.CROSSBOW);
+        wlRecipe.setIngredient('B', Material.BLAZE_POWDER);
+        pl.getServer().addRecipe(wlRecipe);
+
+        // Lifestealer
+        org.bukkit.inventory.ShapedRecipe lsRecipe = new org.bukkit.inventory.ShapedRecipe(
+                new NamespacedKey(pl, "lifestealer_recipe"), getItem("lifestealer"));
+        lsRecipe.shape("HHH", "HSH", "HNH");
+        lsRecipe.setIngredient('H', Material.HEART_OF_THE_SEA);
+        lsRecipe.setIngredient('S', Material.NETHERITE_SWORD);
+        lsRecipe.setIngredient('N', Material.NETHER_STAR);
+        pl.getServer().addRecipe(lsRecipe);
+
+        // King's Crown
+        org.bukkit.inventory.ShapedRecipe kcRecipe = new org.bukkit.inventory.ShapedRecipe(
+                new NamespacedKey(pl, "kings_crown_recipe"), getItem("kings_crown"));
+        kcRecipe.shape("GDG", "GHG", "NGN");
+        kcRecipe.setIngredient('G', Material.GOLD_ingot);
+        kcRecipe.setIngredient('D', Material.DIAMOND);
+        kcRecipe.setIngredient('H', Material.NETHERITE_HELMET);
+        kcRecipe.setIngredient('N', Material.NETHERITE_INGOT);
+        pl.getServer().addRecipe(kcRecipe);
     }
 
     private static void register(String id, ItemStack item) {
@@ -68,7 +106,6 @@ public class CustomItems {
             m.setLore(
                     java.util.Arrays.asList("§7A heavy blade that shines with pure light.", "§eCooldown: sword-like"));
 
-            // Attributes
             m.addAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, new org.bukkit.attribute.AttributeModifier(
                     new NamespacedKey(plugin, "scythe_damage"), 8.0,
                     org.bukkit.attribute.AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.HAND));
@@ -86,10 +123,9 @@ public class CustomItems {
         ItemMeta m = it.getItemMeta();
         if (m != null) {
             m.setDisplayName("§0Scythe of Darkness");
-            // Remove Shadow Enchantment Glint if desired, but user kept SHARPNESS 5.
             m.addEnchant(Enchantment.SHARPNESS, 5, true);
             m.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            m.addItemFlags(ItemFlag.HIDE_ATTRIBUTES); // Hide attributes so we don't see the messy modifiers
+            m.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
             m.setLore(java.util.Arrays.asList(
                     "§7A cruel scythe swathed in shadow.",
                     "§7Reaping I",
@@ -97,23 +133,6 @@ public class CustomItems {
                     "",
                     "§eRight-click: Spewing (Wave of Darkness)",
                     "§ePassive: Reaping (Pull entities)"));
-
-            // Attributes:
-            // Netherite Sword Base: 8 Dmg, 1.6 Speed
-            // Desired (Netherite Axe): 10 Dmg, 1.0 Speed
-            // Modifiers need to be additive or adjustment.
-            // GENERIC_ATTACK_DAMAGE: Base is 1 (fist) + Sword (7) = 8? No, Base of Sword is
-            // 8?
-            // Actually, AttributeModifier ADD_NUMBER adds to the base of the ITEM? or the
-            // Player?
-            // "When an item has custom attributes, the default attributes for that item are
-            // removed." - Minecraft Wiki
-            // So if we add ANY attribute, we lose the default Sword attributes.
-            // We need to reconstruct them.
-            // We want Total = 10 Damage, 1.0 Speed.
-            // Base Player = 1 Damage, 4.0 Speed.
-            // Modifier for Damage = 10 - 1 = 9.
-            // Modifier for Speed = 1.0 - 4.0 = -3.0.
 
             m.addAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, new org.bukkit.attribute.AttributeModifier(
                     new NamespacedKey(plugin, "scythe_dark_damage"), 9.0,
@@ -181,7 +200,6 @@ public class CustomItems {
         return withId(it, "kings_crown");
     }
 
-    // API
     public static String getId(ItemStack item) {
         if (item == null || !item.hasItemMeta())
             return null;
@@ -199,5 +217,9 @@ public class CustomItems {
     public static ItemStack getItem(String id) {
         ItemStack base = registry.get(id);
         return base == null ? null : base.clone();
+    }
+
+    public static boolean isValidItemId(String id) {
+        return registry.containsKey(id);
     }
 }
