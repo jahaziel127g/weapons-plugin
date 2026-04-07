@@ -4,7 +4,7 @@ A custom Minecraft Spigot/Paper (1.21) plugin that adds unique, powerful weapons
 
 ## Features
 
-### ⚔️ Custom Weapons
+### Custom Weapons
 Each weapon has unique abilities and textures (via CustomModelData).
 
 - **Scythe of Light** (Mace)
@@ -24,7 +24,7 @@ Each weapon has unique abilities and textures (via CustomModelData).
   - *Passive*: Unbreakable.
   - *Ability*: **Bounty**. Allows the wearer to set bounties.
 
-### 🕯️ Ritual System
+### Ritual System
 Weapons are not crafted normally but created through a **Ritual**.
 - **Usage**: `/ritual <item_id>` (OP only).
 - **Process**:
@@ -32,7 +32,7 @@ Weapons are not crafted normally but created through a **Ritual**.
   - **Global Messages**: The entire server is notified when a ritual starts and completes.
 - **Unique Limit**: Each weapon is **unique**. It can only be crafted once per server history unless destroyed.
 
-### 💀 Destruction & Recovery
+### Destruction & Recovery
 If a Legendary Weapon is lost, it can be crafted again.
 - **Destruction Detection**:
   - Dropped in **Lava/Fire/Void**.

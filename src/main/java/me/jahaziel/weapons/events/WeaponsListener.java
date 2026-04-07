@@ -18,8 +18,10 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -31,16 +33,23 @@ import java.util.UUID;
 public class WeaponsListener implements Listener {
     private final WeaponsPlugin plugin;
     private static NamespacedKey launcherKey;
+        private NamespacedKey crownTouchKey;
+        private final java.util.Map<UUID, ItemStack> recentPickupMap = new java.util.HashMap<>();
 
     public WeaponsListener(WeaponsPlugin plugin) {
         this.plugin = plugin;
         launcherKey = new NamespacedKey(plugin, "is_wither_launcher_projectile");
+            crownTouchKey = new NamespacedKey(plugin, "kings_crown_last_touch");
 
-        // Passive Task for King's Crown
+        // Passive Task for King's Crown and duplicate prevention
         new BukkitRunnable() {
             @Override
             public void run() {
                 for (Player p : Bukkit.getOnlinePlayers()) {
+                    // Check for and remove duplicates
+                    removeCrownDuplicates(p, null);
+                    
+                    // Apply buffs if wearing the crown
                     ItemStack helmet = p.getInventory().getHelmet();
                     if (helmet != null && CustomItems.isCustomItem(helmet, "kings_crown")) {
                         p.addPotionEffect(new PotionEffect(PotionEffectType.STRENGTH, 100, 1, true, false));
@@ -269,6 +278,189 @@ public class WeaponsListener implements Listener {
         if (e.getEntity() instanceof WitherSkull skull) {
             if (skull.getPersistentDataContainer().has(launcherKey, PersistentDataType.BYTE)) {
                 e.blockList().clear(); // Protect terrain
+            }
+        }
+    }
+
+    @EventHandler
+    public void onArmorChange(InventoryClickEvent e) {
+        if (!(e.getWhoClicked() instanceof Player player)) {
+            return;
+        }
+
+        // Only handle the player's own inventory
+        if (!e.getInventory().equals(player.getInventory())) {
+            return;
+        }
+
+        // Helmet slot is 39 in the player inventory
+        if (e.getRawSlot() != 39) {
+            return;
+        }
+
+        ItemStack cursor = e.getCursor();
+
+        // Check if crown is being equipped from cursor
+            boolean cursorHasCrown = CustomItems.isCustomItem(cursor, "kings_crown");
+
+        // If a crown is being equipped to the helmet slot
+        if (cursorHasCrown || (e.isShiftClick() && cursorHasCrown)) {
+            // Remove from off-hand to prevent duplication
+            ItemStack offhand = player.getInventory().getItemInOffHand();
+            if (CustomItems.isCustomItem(offhand, "kings_crown")) {
+                player.getInventory().setItemInOffHand(null);
+            }
+            // Also remove from main hand
+            ItemStack mainHand = player.getInventory().getItemInMainHand();
+            if (CustomItems.isCustomItem(mainHand, "kings_crown")) {
+                player.getInventory().setItemInMainHand(null);
+            }
+            // Tag the destination slot as last-touched so cleanup preserves it
+            final int raw = e.getRawSlot();
+            Bukkit.getScheduler().runTaskLater(plugin, () -> tagSlotLastTouch(player, raw), 1L);
+        }
+    }
+
+    @EventHandler
+    public void onInventoryClickCleanup(InventoryClickEvent e) {
+        // Post-click cleanup: if crown ends up in multiple slots, remove duplicates
+        if (!(e.getWhoClicked() instanceof Player player)) {
+            return;
+        }
+
+        if (!e.getInventory().equals(player.getInventory())) {
+            return;
+        }
+        // Run after the event to check for duplicates; preserve the raw slot if applicable
+        final Integer preserve = Integer.valueOf(e.getRawSlot());
+        Bukkit.getScheduler().runTaskLater(plugin, () -> removeCrownDuplicates(player, preserve), 1L);
+    }
+
+    @EventHandler
+    public void onEntityPickupItem(org.bukkit.event.entity.EntityPickupItemEvent e) {
+        if (!(e.getEntity() instanceof Player player)) return;
+        ItemStack picked = e.getItem().getItemStack();
+        if (!CustomItems.isCustomItem(picked, "kings_crown")) return;
+
+        // Store snapshot so we can prefer to preserve the picked item after it is added
+        recentPickupMap.put(player.getUniqueId(), picked.clone());
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            ItemStack snapshot = recentPickupMap.remove(player.getUniqueId());
+            if (snapshot == null) return;
+            // Try to find a crown matching the snapshot in inventory and tag it
+            for (int i = 0; i < 36; i++) {
+                ItemStack it = player.getInventory().getItem(i);
+                if (it != null && CustomItems.isCustomItem(it, "kings_crown") && matchSnapshot(it, snapshot)) {
+                    tagSlotLastTouch(player, i);
+                    break;
+                }
+            }
+            // also check helmet and offhand
+            ItemStack helm = player.getInventory().getHelmet();
+            if (helm != null && CustomItems.isCustomItem(helm, "kings_crown") && matchSnapshot(helm, snapshot)) {
+                tagSlotLastTouch(player, 39);
+            }
+            ItemStack off = player.getInventory().getItemInOffHand();
+            if (off != null && CustomItems.isCustomItem(off, "kings_crown") && matchSnapshot(off, snapshot)) {
+                tagSlotLastTouch(player, 40);
+            }
+            // finally run the duplicate cleanup
+            removeCrownDuplicates(player, null);
+        }, 1L);
+    }
+
+    private boolean matchSnapshot(ItemStack a, ItemStack b) {
+        if (a == null || b == null) return false;
+        String ida = CustomItems.getId(a);
+        String idb = CustomItems.getId(b);
+        if (ida == null || idb == null) return false;
+        if (!ida.equals(idb)) return false;
+        ItemMeta ma = a.getItemMeta();
+        ItemMeta mb = b.getItemMeta();
+        if (ma == null || mb == null) return false;
+        String da = ma.hasDisplayName() ? ma.getDisplayName() : null;
+        String db = mb.hasDisplayName() ? mb.getDisplayName() : null;
+        return (da == null ? db == null : da.equals(db));
+    }
+
+    /**
+     * Removes duplicate crowns from a player's inventory, keeping only one.
+     * If preserveRawSlot is non-null and contains a crown, that crown will be preserved.
+     */
+    private void removeCrownDuplicates(Player player, Integer preserveRawSlot) {
+        class CrownLoc { int slot; ItemStack item; long touch; }
+        java.util.List<CrownLoc> crowns = new java.util.ArrayList<>();
+
+        // Helmet (raw slot 39)
+        ItemStack helmet = player.getInventory().getHelmet();
+        if (CustomItems.isCustomItem(helmet, "kings_crown")) {
+            CrownLoc c = new CrownLoc(); c.slot = 39; c.item = helmet; c.touch = getLastTouch(helmet); crowns.add(c);
+        }
+
+        // Main inventory slots 0-35
+        for (int i = 0; i < 36; i++) {
+            ItemStack it = player.getInventory().getItem(i);
+            if (CustomItems.isCustomItem(it, "kings_crown")) {
+                CrownLoc c = new CrownLoc(); c.slot = i; c.item = it; c.touch = getLastTouch(it); crowns.add(c);
+            }
+        }
+
+        // Off-hand (raw slot 40)
+        ItemStack off = player.getInventory().getItemInOffHand();
+        if (CustomItems.isCustomItem(off, "kings_crown")) {
+            CrownLoc c = new CrownLoc(); c.slot = 40; c.item = off; c.touch = getLastTouch(off); crowns.add(c);
+        }
+
+        // Main hand
+        ItemStack main = player.getInventory().getItemInMainHand();
+        if (CustomItems.isCustomItem(main, "kings_crown")) {
+            int mhSlot = player.getInventory().getHeldItemSlot();
+            CrownLoc c = new CrownLoc(); c.slot = mhSlot; c.item = main; c.touch = getLastTouch(main); crowns.add(c);
+        }
+
+        if (crowns.size() <= 1) return;
+
+        // Determine preserve candidate
+        CrownLoc preserve = null;
+        if (preserveRawSlot != null) {
+            for (CrownLoc c : crowns) if (c.slot == preserveRawSlot) preserve = c;
+        }
+        if (preserve == null) {
+            long best = Long.MIN_VALUE;
+            for (CrownLoc c : crowns) { if (c.touch > best) { best = c.touch; preserve = c; } }
+        }
+        if (preserve == null) {
+            for (CrownLoc c : crowns) if (c.slot == 39) preserve = c;
+        }
+
+        for (CrownLoc c : crowns) {
+            if (c == preserve) continue;
+            if (c.slot == 39) player.getInventory().setHelmet(null);
+            else if (c.slot == 40) player.getInventory().setItemInOffHand(null);
+            else if (c.slot >= 0 && c.slot < 36) player.getInventory().setItem(c.slot, null);
+            else if (c.slot == player.getInventory().getHeldItemSlot()) player.getInventory().setItemInMainHand(null);
+        }
+    }
+
+    private long getLastTouch(ItemStack item) {
+        if (item == null || !item.hasItemMeta()) return 0L;
+        ItemMeta m = item.getItemMeta(); if (m == null) return 0L;
+        java.lang.Long v = m.getPersistentDataContainer().get(crownTouchKey, PersistentDataType.LONG);
+        return v == null ? 0L : v.longValue();
+    }
+
+    private void tagSlotLastTouch(Player player, int rawSlot) {
+        ItemStack target = null;
+        if (rawSlot == 39) target = player.getInventory().getHelmet();
+        else if (rawSlot >= 0 && rawSlot < 36) target = player.getInventory().getItem(rawSlot);
+        else if (rawSlot == 40) target = player.getInventory().getItemInOffHand();
+        else target = player.getInventory().getItemInMainHand();
+
+        if (CustomItems.isCustomItem(target, "kings_crown")) {
+            ItemMeta meta = target.getItemMeta();
+            if (meta != null) {
+                meta.getPersistentDataContainer().set(crownTouchKey, PersistentDataType.LONG, System.currentTimeMillis());
+                target.setItemMeta(meta);
             }
         }
     }

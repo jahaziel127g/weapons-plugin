@@ -1,4 +1,5 @@
 me\jahaziel\weapons\managers\RitualManager.class
+me\jahaziel\weapons\events\WeaponsListener$1CrownLoc.class
 me\jahaziel\weapons\items\CustomItems.class
 me\jahaziel\weapons\commands\BountyCommand.class
 me\jahaziel\weapons\managers\RitualManager$1.class
