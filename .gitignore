@@ -11,3 +11,6 @@ target/
 
 # Agent instructions
 AGENTS.md
+
+# Generated exports
+exportToHTML/
