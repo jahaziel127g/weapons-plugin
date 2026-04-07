@@ -43,64 +43,19 @@ If a Legendary Weapon is lost, it can be crafted again.
 ## Crafting Recipes
 
 ### Scythe of Light
-```
-P E P
-P M P
-S N S
-
-P = Player Head
-E = Enchanted Golden Apple
-M = Mace
-S = Echo Shard
-N = Netherite Sword
-```
+![Scythe of Light Recipe](images/scythe_of_light.png)
 
 ### Scythe of Darkness
-```
-S E S
-S M S
-S P S
-
-S = Shulker Shell
-E = Echo Shard
-M = Netherite Axe
-P = Phantom Membrane
-```
+![Scythe of Darkness Recipe](images/scythe_of_darkness.png)
 
 ### Wither Launcher
-```
-W S W
-C B C
-W C W
-
-W = Wither Skeleton Skull
-S = Echo Shard
-C = Crossbow
-B = Blaze Powder
-```
+![Wither Launcher Recipe](images/wither_launcher.png)
 
 ### Lifestealer
-```
-H H H
-H S H
-H N H
-
-H = Heart of the Sea
-S = Netherite Sword
-N = Nether Star
-```
+![Lifestealer Recipe](images/lifestealer.png)
 
 ### King's Crown
-```
-G D G
-G H G
-N G N
-
-G = Gold Ingot
-D = Diamond
-H = Netherite Helmet
-N = Netherite Ingot
-```
+![King's Crown Recipe](images/kings_crown.png)
 
 ## Commands
 
