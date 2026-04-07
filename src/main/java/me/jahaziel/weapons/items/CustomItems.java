@@ -75,7 +75,7 @@ public class CustomItems {
         org.bukkit.inventory.ShapedRecipe kcRecipe = new org.bukkit.inventory.ShapedRecipe(
                 new NamespacedKey(pl, "kings_crown_recipe"), getItem("kings_crown"));
         kcRecipe.shape("GDG", "GHG", "NGN");
-        kcRecipe.setIngredient('G', Material.GOLD_ingot);
+        kcRecipe.setIngredient('G', Material.GOLD_INGOT);
         kcRecipe.setIngredient('D', Material.DIAMOND);
         kcRecipe.setIngredient('H', Material.NETHERITE_HELMET);
         kcRecipe.setIngredient('N', Material.NETHERITE_INGOT);
