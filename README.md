@@ -43,19 +43,19 @@ If a Legendary Weapon is lost, it can be crafted again.
 ## Crafting Recipes
 
 ### Scythe of Light
-![Scythe of Light Recipe](images/scythe_of_light.png)
+<img src="images/scythe_of_light.png" width="122" height="134" alt="Scythe of Light Recipe">
 
 ### Scythe of Darkness
-![Scythe of Darkness Recipe](images/scythe_of_darkness.png)
+<img src="images/scythe_of_darkness.png" width="122" height="134" alt="Scythe of Darkness Recipe">
 
 ### Wither Launcher
-![Wither Launcher Recipe](images/wither_launcher.png)
+<img src="images/wither_launcher.png" width="122" height="134" alt="Wither Launcher Recipe">
 
 ### Lifestealer
-![Lifestealer Recipe](images/lifestealer.png)
+<img src="images/lifestealer.png" width="122" height="134" alt="Lifestealer Recipe">
 
 ### King's Crown
-![King's Crown Recipe](images/kings_crown.png)
+<img src="images/kings_crown.png" width="122" height="134" alt="King's Crown Recipe">
 
 ## Commands
 
