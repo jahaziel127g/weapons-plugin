@@ -44,7 +44,7 @@ public class BossManager implements Listener {
 
         bossSpawnLocation = spawnLoc;
         spawnLoc.getWorld().playSound(spawnLoc, Sound.ENTITY_WITHER_SPAWN, 1.0f, 0.5f);
-        spawnLoc.getWorld().spawnParticle(Particle.EXPLOSION_HUGE, spawnLoc, 5, 1, 1, 1, 0);
+        spawnLoc.getWorld().spawnParticle(Particle.EXPLOSION, spawnLoc, 5, 1, 1, 1, 0);
 
         Entity entity = spawnLoc.getWorld().spawnEntity(spawnLoc, EntityType.WITHER);
         if (!(entity instanceof Wither wither)) return;

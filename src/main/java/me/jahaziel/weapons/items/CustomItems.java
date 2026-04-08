@@ -217,7 +217,7 @@ public class CustomItems {
         if (m != null) {
             m.setDisplayName("§bKusanagi");
             m.addEnchant(Enchantment.SHARPNESS, 6, true);
-            m.addEnchant(Enchantment.LOOT_BONUS_MOBS, 3, true);
+            m.addEnchant(Enchantment.LOOT_BONUS_BLOCKS, 3, true);
             m.addEnchant(Enchantment.FIRE_ASPECT, 2, true);
             m.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             m.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);

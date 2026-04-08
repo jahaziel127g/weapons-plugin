@@ -9,4 +9,6 @@ commands:
     description: Reset crafted weapons (OP only)
   bounty:
     description: Place a bounty (crown wearer only)
+  spawnboss:
+    description: Spawn the Ultra Guardian boss (OP only)
 permissions: {}

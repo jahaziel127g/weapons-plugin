@@ -256,7 +256,7 @@ public class WeaponsListener implements Listener {
                 }
             }
 
-            player.getWorld().spawnParticle(Particle.LARGE_EXPLOSION, playerLoc.add(0, 5, 0), 30, 15, 5, 15, 0.1);
+            player.getWorld().spawnParticle(Particle.EXPLOSION, playerLoc.add(0, 5, 0), 30, 15, 5, 15, 0.1);
 
             CooldownManager.setCooldown("kusanagi_thunder", uuid, 120L);
             player.setCooldown(Material.NETHERITE_SWORD, 20 * 120);
