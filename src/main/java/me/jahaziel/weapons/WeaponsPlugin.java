@@ -3,10 +3,12 @@ package me.jahaziel.weapons;
 import me.jahaziel.weapons.commands.BountyCommand;
 import me.jahaziel.weapons.commands.ResetCommand;
 import me.jahaziel.weapons.commands.RitualCommand;
+import me.jahaziel.weapons.commands.SpawnBossCommand;
 import me.jahaziel.weapons.events.RitualListener;
 import me.jahaziel.weapons.events.WeaponsListener;
 import me.jahaziel.weapons.items.CustomItems;
 import me.jahaziel.weapons.items.WeaponStorage;
+import me.jahaziel.weapons.managers.BossManager;
 import me.jahaziel.weapons.managers.RitualManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -18,7 +20,6 @@ public final class WeaponsPlugin extends JavaPlugin {
         instance = this;
         saveDefaultConfig();
 
-        // load storage & items
         WeaponStorage.init(this);
         WeaponStorage.load();
         CustomItems.init(this);
@@ -27,12 +28,13 @@ public final class WeaponsPlugin extends JavaPlugin {
         RitualManager.init(this);
         RitualManager.load();
 
-        // Commands
+        BossManager.init(this);
+
         getCommand("bounty").setExecutor(new BountyCommand());
         getCommand("ritual").setExecutor(new RitualCommand());
         getCommand("weapon").setExecutor(new ResetCommand());
+        getCommand("spawnboss").setExecutor(new SpawnBossCommand());
 
-        // Events
         getServer().getPluginManager().registerEvents(new WeaponsListener(this), this);
         getServer().getPluginManager().registerEvents(new RitualListener(), this);
 

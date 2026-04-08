@@ -119,6 +119,24 @@ public class WeaponsListener implements Listener {
                 }
             }
         }
+
+        if (id.equals("kusanagi")) {
+            if (e.getEntity() instanceof LivingEntity tgt) {
+                double damage = e.getFinalDamage();
+                double heal = damage * 1.0;
+                double max = player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+                player.setHealth(Math.min(player.getHealth() + heal, max));
+
+                player.getWorld().spawnParticle(Particle.HEART, player.getLocation().add(0, 1, 0), 8, 0.3, 0.3, 0.3, 0.0);
+                player.getWorld().spawnParticle(Particle.ENCHANT, player.getLocation().add(0, 1, 0), 10, 0.3, 0.3, 0.3, 0.0);
+
+                if (Math.random() < 0.05) {
+                    Location tgtLoc = tgt.getLocation();
+                    tgt.getWorld().strikeLightning(tgtLoc);
+                    tgt.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 100, 2));
+                }
+            }
+        }
     }
 
     @EventHandler
@@ -216,6 +234,33 @@ public class WeaponsListener implements Listener {
         if (id.equals("kings_crown")) {
             player.getWorld().spawnParticle(Particle.END_ROD, player.getLocation().add(0, 1.2, 0), 6, 0.2, 0.4, 0.2,
                     0.0);
+        }
+
+        if (id.equals("kusanagi")) {
+            if (CooldownManager.isOnCooldown("kusanagi_thunder", uuid)) {
+                player.sendActionBar(Component.text("§cKusanagi Thunder Storm on cooldown ("
+                        + CooldownManager.getRemaining("kusanagi_thunder", uuid) + "s)"));
+                return;
+            }
+
+            player.sendTitle("§b§lThunder Storm", "§7The heavens answer!", 5, 40, 10);
+            player.playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1.0f, 0.8f);
+
+            Location playerLoc = player.getLocation();
+            for (Entity ent : player.getWorld().getNearbyEntities(playerLoc, 30, 30, 30)) {
+                if (ent instanceof LivingEntity target && !target.equals(player)) {
+                    Location targetLoc = target.getLocation();
+                    player.getWorld().strikeLightning(targetLoc);
+                    target.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 200, 3));
+                    target.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 100, 2));
+                }
+            }
+
+            player.getWorld().spawnParticle(Particle.LARGE_EXPLOSION, playerLoc.add(0, 5, 0), 30, 15, 5, 15, 0.1);
+
+            CooldownManager.setCooldown("kusanagi_thunder", uuid, 120L);
+            player.setCooldown(Material.NETHERITE_SWORD, 20 * 120);
+            return;
         }
     }
 

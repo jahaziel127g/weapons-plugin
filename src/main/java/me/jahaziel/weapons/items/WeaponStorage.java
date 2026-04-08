@@ -15,6 +15,7 @@ public class WeaponStorage {
     private static File file;
     private static FileConfiguration cfg;
     private static final Set<String> crafted = new HashSet<>();
+    private static final Set<String> usedForKusanagi = new HashSet<>();
 
     public static void init(WeaponsPlugin pl) {
         plugin = pl;
@@ -32,14 +33,20 @@ public class WeaponStorage {
 
     public static void load() {
         crafted.clear();
+        usedForKusanagi.clear();
         if (cfg.contains("crafted")) {
             List<String> list = cfg.getStringList("crafted");
             crafted.addAll(list);
+        }
+        if (cfg.contains("used_for_kusanagi")) {
+            List<String> list = cfg.getStringList("used_for_kusanagi");
+            usedForKusanagi.addAll(list);
         }
     }
 
     public static void save() {
         cfg.set("crafted", crafted.stream().toList());
+        cfg.set("used_for_kusanagi", usedForKusanagi.stream().toList());
         try {
             cfg.save(file);
         } catch (IOException e) {
@@ -63,6 +70,21 @@ public class WeaponStorage {
 
     public static void resetAll() {
         crafted.clear();
+        usedForKusanagi.clear();
+        save();
+    }
+
+    public static boolean hasBeenUsedForKusanagi(String weaponId) {
+        return usedForKusanagi.contains(weaponId);
+    }
+
+    public static void markUsedForKusanagi(String weaponId) {
+        usedForKusanagi.add(weaponId);
+        save();
+    }
+
+    public static void resetKusanagiUsage() {
+        usedForKusanagi.clear();
         save();
     }
 }

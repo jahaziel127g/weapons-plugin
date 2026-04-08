@@ -24,6 +24,33 @@ Each weapon has unique abilities and textures (via CustomModelData).
   - *Passive*: Unbreakable.
   - *Ability*: **Bounty**. Allows the wearer to set bounties.
 
+### Ultra Legendary Weapon
+
+- **Kusanagi** (Netherite Sword)
+  - *Attributes*: 15 Attack Damage, 1.8 Attack Speed.
+  - *Passive*: 100% lifesteal, Lightning strike on hit (5% chance), Fire Aspect, Fortune III.
+  - *Ability*: **Thunder Storm** (Right-click). Calls lightning on all enemies within 30 blocks.
+  - *Cooldown*: 2 minutes
+
+### Ultra Guardian Boss
+
+The **Ultra Guardian** is a powerful Wither boss that spawns 700+ blocks away from the nearest player. When killed, it drops the **Kusanagi**.
+
+- Spawn command: `/spawnboss` (OP only)
+- Health: 500 HP
+- Damage: 25 per hit
+- Location: Random spawn, minimum 700 blocks from any player
+
+### Crafting the Kusanagi
+
+To craft the Kusanagi, you must:
+1. Kill the Ultra Guardian to obtain the Kusanagi (it drops on death)
+2. **OR** craft it using a ritual-like process:
+   - Must be within **700 blocks** of the Ultra Guardian
+   - Must use a **legendary weapon** in the crafting grid
+   - The legendary weapon is **consumed** and can no longer be used to craft another Kusanagi
+   - Recipe: Lightning Rod, Netherite Sword, Nether Star, Echo Shard
+
 ### Ritual System
 Weapons are not crafted normally but created through a **Ritual**.
 - **Usage**: `/ritual <item_id>` (OP only).
@@ -57,12 +84,27 @@ If a Legendary Weapon is lost, it can be crafted again.
 ### King's Crown
 <img src="images/kings_crown.png" width="122" height="134" alt="King's Crown Recipe">
 
+### Kusanagi
+```
+L X L
+L N L
+S L S
+
+L = Lightning Rod
+X = Netherite Sword
+N = Nether Star
+S = Echo Shard
+```
+
+*Note: Kusanagi can only be crafted within 700 blocks of the Ultra Guardian boss.*
+
 ## Commands
 
-- `/ritual <item_id>` - Start a ritual for a specific item (OP only).
+- `/ritual <item_id>` - Start a ritual to create a weapon (OP only).
   - IDs: `scythe_of_light`, `scythe_of_darkness`, `wither_launcher`, `lifestealer`, `kings_crown`.
-- `/weapon reset` - Resets all "crafted" flags, allowing all items to be crafted again (OP only).
-- `/bounty <player>` - Highlights a target player (Glowing). Only usable by the **King's Crown** wearer.
+- `/weapon reset` - Resets all "crafted" flags (OP only).
+- `/bounty <player>` - Place a bounty on a player (crown wearer only).
+- `/spawnboss` - Spawn the Ultra Guardian boss (OP only).
 
 ## Installation
 1. Drop the jar into your server's `plugins` folder.

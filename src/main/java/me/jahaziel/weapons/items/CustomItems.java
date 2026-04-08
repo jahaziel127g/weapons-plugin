@@ -28,6 +28,7 @@ public class CustomItems {
         register("wither_launcher", createWitherLauncher());
         register("lifestealer", createLifestealer());
         register("kings_crown", createKingsCrown());
+        register("kusanagi", createKusanagi());
     }
 
     public static void registerRecipes(WeaponsPlugin pl) {
@@ -80,6 +81,16 @@ public class CustomItems {
         kcRecipe.setIngredient('H', Material.NETHERITE_HELMET);
         kcRecipe.setIngredient('N', Material.NETHERITE_INGOT);
         pl.getServer().addRecipe(kcRecipe);
+
+        // Kusanagi (requires any legendary weapon + netherite sword + nether star + echo shard)
+        org.bukkit.inventory.ShapedRecipe kusanagiRecipe = new org.bukkit.inventory.ShapedRecipe(
+                new NamespacedKey(pl, "kusanagi_recipe"), getItem("kusanagi"));
+        kusanagiRecipe.shape("LXL", "LNL", "SLS");
+        kusanagiRecipe.setIngredient('L', Material.LIGHTNING_ROD);
+        kusanagiRecipe.setIngredient('X', Material.NETHERITE_SWORD);
+        kusanagiRecipe.setIngredient('N', Material.NETHER_STAR);
+        kusanagiRecipe.setIngredient('S', Material.ECHO_SHARD);
+        pl.getServer().addRecipe(kusanagiRecipe);
     }
 
     private static void register(String id, ItemStack item) {
@@ -200,6 +211,41 @@ public class CustomItems {
         return withId(it, "kings_crown");
     }
 
+    private static ItemStack createKusanagi() {
+        ItemStack it = new ItemStack(Material.NETHERITE_SWORD);
+        ItemMeta m = it.getItemMeta();
+        if (m != null) {
+            m.setDisplayName("§bKusanagi");
+            m.addEnchant(Enchantment.SHARPNESS, 6, true);
+            m.addEnchant(Enchantment.LOOT_BONUS_MOBS, 3, true);
+            m.addEnchant(Enchantment.FIRE_ASPECT, 2, true);
+            m.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            m.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+            m.setLore(java.util.Arrays.asList(
+                    "§7The legendary blade of the sun god.",
+                    "§7A legendary weapon forged from ancient power.",
+                    "",
+                    "§6Passives:",
+                    "§7 - Lightning strikes on hit (5% chance)",
+                    "§7 - 100% lifesteal",
+                    "§7 - Fire aspect burns enemies",
+                    "§7 - Fortune III for loot bonus",
+                    "",
+                    "§eRight-click: Thunder Storm (calls lightning on all enemies in 30 block radius)",
+                    "§eCooldown: 2 minutes"));
+
+            m.addAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, new org.bukkit.attribute.AttributeModifier(
+                    new NamespacedKey(plugin, "kusanagi_damage"), 15.0,
+                    org.bukkit.attribute.AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.HAND));
+            m.addAttributeModifier(Attribute.GENERIC_ATTACK_SPEED, new org.bukkit.attribute.AttributeModifier(
+                    new NamespacedKey(plugin, "kusanagi_speed"), -2.0,
+                    org.bukkit.attribute.AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.HAND));
+
+            it.setItemMeta(m);
+        }
+        return withId(it, "kusanagi");
+    }
+
     public static String getId(ItemStack item) {
         if (item == null || !item.hasItemMeta())
             return null;
@@ -221,5 +267,10 @@ public class CustomItems {
 
     public static boolean isValidItemId(String id) {
         return registry.containsKey(id);
+    }
+
+    public static boolean isLegendaryWeapon(String id) {
+        return id != null && (id.equals("scythe_of_light") || id.equals("scythe_of_darkness") ||
+                id.equals("wither_launcher") || id.equals("lifestealer") || id.equals("kings_crown"));
     }
 }
