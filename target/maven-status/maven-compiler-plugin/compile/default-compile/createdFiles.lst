@@ -1,5 +1,9 @@
+me\jahaziel\weapons\events\WeaponsListener$2.class
+me\jahaziel\weapons\events\WeaponsListener.class
 me\jahaziel\weapons\commands\RitualCommand.class
+me\jahaziel\weapons\events\WeaponsListener$1CrownLoc.class
 me\jahaziel\weapons\commands\SpawnBossCommand.class
+me\jahaziel\weapons\events\WeaponsListener$1.class
 me\jahaziel\weapons\commands\BountyCommand.class
 me\jahaziel\weapons\WeaponsPlugin.class
 me\jahaziel\weapons\events\RitualListener.class

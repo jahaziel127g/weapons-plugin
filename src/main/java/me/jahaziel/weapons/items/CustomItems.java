@@ -217,7 +217,7 @@ public class CustomItems {
         if (m != null) {
             m.setDisplayName("§bKusanagi");
             m.addEnchant(Enchantment.SHARPNESS, 6, true);
-            m.addEnchant(Enchantment.LOOT_BONUS_BLOCKS, 3, true);
+            m.addEnchant(Enchantment.DURABILITY, 3, true);
             m.addEnchant(Enchantment.FIRE_ASPECT, 2, true);
             m.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             m.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
@@ -229,7 +229,7 @@ public class CustomItems {
                     "§7 - Lightning strikes on hit (5% chance)",
                     "§7 - 100% lifesteal",
                     "§7 - Fire aspect burns enemies",
-                    "§7 - Fortune III for loot bonus",
+                    "§7 - Unbreaking III for durability",
                     "",
                     "§eRight-click: Thunder Storm (calls lightning on all enemies in 30 block radius)",
                     "§eCooldown: 2 minutes"));
